@@ -48,7 +48,8 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        'border-border bg-background fixed top-0 right-0 left-0 z-50 border-b p-4 transition-all duration-200'
+        'bg-background fixed top-0 right-0 left-0 z-50 p-4 transition-all duration-200',
+        isScrolled && 'border-b'
       )}
     >
       <div className='flex flex-wrap items-center justify-between gap-4'>

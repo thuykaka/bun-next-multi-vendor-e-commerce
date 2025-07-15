@@ -1,18 +1,31 @@
+import configPromise from '@payload-config';
+import { getPayload } from 'payload';
 import Footer from '@/modules/home/ui/components/footer';
 import Navbar from '@/modules/home/ui/components/navbar';
+import SearchFilters from '@/modules/home/ui/components/search-filters';
 
-export default function HomeLayout({
+export default async function HomeLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
+  const payload = await getPayload({ config: configPromise });
+  const categories = await payload.find({
+    collection: 'categories',
+    depth: 1,
+    where: {
+      parent: {
+        exists: false
+      }
+    }
+  });
+
   return (
     <main className='flex min-h-screen w-full flex-col overflow-y-auto'>
       <Navbar />
+      <SearchFilters categories={categories} />
       <div className='bg-background absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#dadde2_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#393e4a_1px,transparent_1px)]' />
-      <div className='flex min-h-0 flex-1 flex-col gap-4 p-4 pt-24'>
-        {children}
-      </div>
+      <div className='flex min-h-0 flex-1 flex-col gap-4 p-4'>{children}</div>
       <Footer />
     </main>
   );
