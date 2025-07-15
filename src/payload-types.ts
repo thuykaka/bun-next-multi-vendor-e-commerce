@@ -74,20 +74,18 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    categories: {
+      subCategories: 'categories';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    'payload-locked-documents':
-      | PayloadLockedDocumentsSelect<false>
-      | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences':
-      | PayloadPreferencesSelect<false>
-      | PayloadPreferencesSelect<true>;
-    'payload-migrations':
-      | PayloadMigrationsSelect<false>
-      | PayloadMigrationsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: string;
@@ -171,6 +169,14 @@ export interface Media {
 export interface Category {
   id: string;
   name: string;
+  slug: string;
+  color?: string | null;
+  parent?: (string | null) | Category;
+  subCategories?: {
+    docs?: (string | Category)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -281,6 +287,10 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
+  slug?: T;
+  color?: T;
+  parent?: T;
+  subCategories?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -323,6 +333,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

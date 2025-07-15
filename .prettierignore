@@ -46,3 +46,5 @@ node_modules
 build
 dist
 ico
+
+src/payload-types.ts
