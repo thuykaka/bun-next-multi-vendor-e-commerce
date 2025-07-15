@@ -51,7 +51,7 @@ export default function Navbar() {
         'border-border bg-background fixed top-0 right-0 left-0 z-50 border-b p-4 transition-all duration-200'
       )}
     >
-      <div className='mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4'>
+      <div className='flex flex-wrap items-center justify-between gap-4'>
         <div className='flex items-center gap-x-12'>
           <Logo />
 
@@ -84,7 +84,7 @@ export default function Navbar() {
               Login
             </Link>
           </Button>
-          <Button variant='secondary' asChild>
+          <Button variant='default' asChild>
             <Link href='/sign-up'>
               <ShoppingBagIcon className='size-4' />
               Start Selling
