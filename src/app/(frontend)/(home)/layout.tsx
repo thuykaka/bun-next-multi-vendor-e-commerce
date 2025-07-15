@@ -1,5 +1,4 @@
-import configPromise from '@payload-config';
-import { getPayload } from 'payload';
+import { getCategories } from '@/lib/payload-apis';
 import Footer from '@/modules/home/ui/components/footer';
 import Navbar from '@/modules/home/ui/components/navbar';
 import SearchFilters from '@/modules/home/ui/components/search-filters';
@@ -9,16 +8,7 @@ export default async function HomeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const payload = await getPayload({ config: configPromise });
-  const categories = await payload.find({
-    collection: 'categories',
-    depth: 1,
-    where: {
-      parent: {
-        exists: false
-      }
-    }
-  });
+  const categories = await getCategories();
 
   return (
     <main className='flex min-h-screen w-full flex-col overflow-y-auto'>
