@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
+import { TRPCReactProvider } from '@/trpc/client';
 import { fontVariables } from '@/lib/font';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/sonner';
@@ -25,15 +26,17 @@ export default function RootLayout({
         )}
       >
         <NextTopLoader showSpinner={false} color='var(--primary)' />
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Toaster richColors />
-          {children}
-        </ThemeProvider>
+        <TRPCReactProvider>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster richColors />
+            {children}
+          </ThemeProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );

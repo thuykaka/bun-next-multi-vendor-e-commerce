@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { PaginatedDocs } from 'payload';
+import { useTRPC } from '@/trpc/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sheet,
@@ -13,14 +14,14 @@ import {
 
 export default function CategoriesSidebar({
   isOpen,
-  onOpenChange,
-  data
+  onOpenChange
 }: {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  data: PaginatedDocs<Category>;
 }) {
   const router = useRouter();
+  const trpc = useTRPC();
+  const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
 
   const [parentCategories, setParentCategories] = useState<Category[] | null>(
     null

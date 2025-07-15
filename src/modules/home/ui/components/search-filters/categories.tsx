@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { ListFilterIcon } from 'lucide-react';
 import Link from 'next/link';
 import { PaginatedDocs } from 'payload';
+import { useTRPC } from '@/trpc/client';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useVisibleCategories } from '@/modules/home/ui/hooks/use-visible-categories';
@@ -19,12 +21,10 @@ import {
 } from '@/components/ui/navigation-menu';
 import CategoriesSidebar from './categories-sidebar';
 
-type CategoriesProps = {
-  data: PaginatedDocs<Category>;
-};
+export default function Categories() {
+  const trpc = useTRPC();
+  const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
 
-export default function Categories({ data }: CategoriesProps) {
-  // Di chuyển tất cả hooks lên đầu component
   const activeCategory = 'all';
   const isMobile = useIsMobile();
   const maxVisibleCategories = useVisibleCategories();
@@ -107,7 +107,6 @@ export default function Categories({ data }: CategoriesProps) {
       )}
 
       <CategoriesSidebar
-        data={data}
         isOpen={isSidebarOpen}
         onOpenChange={setIsSidebarOpen}
       />

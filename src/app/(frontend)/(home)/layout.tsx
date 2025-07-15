@@ -1,4 +1,4 @@
-import { getCategories } from '@/lib/payload-apis';
+import { HydrateClient, prefetch, trpcServer } from '@/trpc/server';
 import Footer from '@/modules/home/ui/components/footer';
 import Navbar from '@/modules/home/ui/components/navbar';
 import SearchFilters from '@/modules/home/ui/components/search-filters';
@@ -8,12 +8,14 @@ export default async function HomeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const categories = await getCategories();
+  prefetch(trpcServer.categories.getMany.queryOptions());
 
   return (
     <main className='flex min-h-screen w-full flex-col overflow-y-auto'>
       <Navbar />
-      <SearchFilters categories={categories} />
+      <HydrateClient>
+        <SearchFilters />
+      </HydrateClient>
       <div className='bg-background absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#dadde2_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#393e4a_1px,transparent_1px)]' />
       <div className='flex min-h-0 flex-1 flex-col gap-4 p-4'>{children}</div>
       <Footer />
