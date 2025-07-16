@@ -1,3 +1,4 @@
+import z from 'zod';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 
 export const categoriesRouter = createTRPCRouter({
@@ -15,5 +16,18 @@ export const categoriesRouter = createTRPCRouter({
     });
 
     return categories;
-  })
+  }),
+  getOne: baseProcedure
+    .input(z.object({ slug: z.string().min(1, 'Slug is required') }))
+    .query(async ({ ctx, input }) => {
+      const category = await ctx.payloadcms.find({
+        collection: 'categories',
+        where: {
+          slug: { equals: input.slug }
+        },
+        limit: 1
+      });
+
+      return category.docs?.[0];
+    })
 });
