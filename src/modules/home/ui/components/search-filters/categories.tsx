@@ -5,7 +5,6 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { ListFilterIcon } from 'lucide-react';
 import Link from 'next/link';
-import { PaginatedDocs } from 'payload';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
