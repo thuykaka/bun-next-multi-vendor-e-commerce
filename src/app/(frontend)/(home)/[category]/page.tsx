@@ -1,5 +1,9 @@
 import { HydrateClient, prefetch, trpcServer } from '@/trpc/server';
-import CategoryView from '@/modules/categories/ui/views/category-view';
+import {
+  ProductList,
+  ProductListError,
+  ProductListSkeleton
+} from '@/modules/products/ui/components/product-list';
 
 type CategoryPageProps = {
   params: Promise<{ category: string }>;
@@ -8,18 +12,14 @@ type CategoryPageProps = {
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
 
-  prefetch(
-    trpcServer.categories.getOne.queryOptions({
-      slug: category
-    })
-  );
+  prefetch(trpcServer.products.getMany.queryOptions({ category }));
 
   return (
     <HydrateClient
-      errorFallback={<div>Error loading category</div>}
-      suspenseFallback={<div>Loading category...</div>}
+      errorFallback={<ProductListError />}
+      suspenseFallback={<ProductListSkeleton />}
     >
-      <CategoryView category={category} />
+      <ProductList category={category} />
     </HydrateClient>
   );
 }
