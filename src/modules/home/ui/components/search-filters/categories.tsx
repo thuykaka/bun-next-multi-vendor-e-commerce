@@ -5,6 +5,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { ListFilterIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -19,13 +20,26 @@ import {
   NavigationMenuTrigger
 } from '@/components/ui/navigation-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import BreadcrumbCategory from './breadcrumb-category';
 import CategoriesSidebar from './categories-sidebar';
 
 export default function Categories() {
   const trpc = useTRPC();
+  const router = useRouter();
+  const params = useParams();
   const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
 
-  const activeCategory = 'all';
+  const activeCategorySlug = params.category || 'all';
+  const activeCategory = data.docs.find(
+    (category) => category.slug === activeCategorySlug
+  );
+  const activeSubCategoryName = (
+    activeCategory?.subCategories?.docs as Category[]
+  )?.find(
+    (subCategory) =>
+      typeof subCategory !== 'string' && subCategory.slug === params.subCategory
+  )?.name;
+
   const isMobile = useIsMobile();
   const maxVisibleCategories = useVisibleCategories();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -46,8 +60,17 @@ export default function Categories() {
     );
   }
 
+  const handleCategoryClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    category: Category
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/${category.slug}`);
+  };
+
   return (
-    <div className='w-full'>
+    <div className='flex w-full flex-col gap-y-4'>
       {isMobile ? (
         <Button
           variant='ghost'
@@ -62,18 +85,22 @@ export default function Categories() {
         <NavigationMenu viewport={false}>
           <NavigationMenuList className='gap-2'>
             {visibleCategories.map((category) => {
-              const isActive = category.slug === activeCategory;
+              const isActive = category.slug === activeCategorySlug;
+              const hasSubCategories =
+                category.subCategories?.docs &&
+                category.subCategories.docs.length > 0;
 
               return (
                 <NavigationMenuItem key={category.id}>
-                  {(category.subCategories?.docs?.length || 0) > 0 ? (
+                  {hasSubCategories ? (
                     <>
                       <NavigationMenuTrigger
                         className={cn(
                           'font-normal',
-                          'data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground'
+                          'data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent data-[active=true]:text-accent-foreground'
                         )}
                         data-active={isActive}
+                        onClick={(e) => handleCategoryClick(e, category)}
                       >
                         {category.name}
                       </NavigationMenuTrigger>
@@ -97,7 +124,7 @@ export default function Categories() {
                     </>
                   ) : (
                     <NavigationMenuLink asChild data-active={isActive}>
-                      <Link href={category.slug}>{category.name}</Link>
+                      <Link href={`/${category.slug}`}>{category.name}</Link>
                     </NavigationMenuLink>
                   )}
                 </NavigationMenuItem>
@@ -118,6 +145,11 @@ export default function Categories() {
           </NavigationMenuList>
         </NavigationMenu>
       )}
+
+      <BreadcrumbCategory
+        category={activeCategory}
+        subCategoryName={activeSubCategoryName}
+      />
 
       <CategoriesSidebar
         isOpen={isSidebarOpen}
