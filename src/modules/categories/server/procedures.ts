@@ -25,7 +25,8 @@ export const categoriesRouter = createTRPCRouter({
         where: {
           slug: { equals: input.slug }
         },
-        limit: 1
+        limit: 1,
+        pagination: false
       });
 
       return category.docs?.[0];

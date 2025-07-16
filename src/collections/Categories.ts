@@ -1,8 +1,10 @@
 import type { CollectionConfig } from 'payload';
-import slugify from 'slugify';
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
+  admin: {
+    useAsTitle: 'name'
+  },
   access: {
     read: () => true
   },
