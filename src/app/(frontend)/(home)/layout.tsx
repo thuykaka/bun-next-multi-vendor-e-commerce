@@ -1,10 +1,4 @@
-import { redirect } from 'next/navigation';
-import {
-  HydrateClient,
-  prefetch,
-  trpcServer,
-  trpcServerCaller
-} from '@/trpc/server';
+import { HydrateClient, prefetch, trpcServer } from '@/trpc/server';
 import Footer from '@/modules/home/ui/components/footer';
 import Navbar from '@/modules/home/ui/components/navbar';
 import SearchFilters from '@/modules/home/ui/components/search-filters';
@@ -15,11 +9,6 @@ export default async function HomeLayout({
   children: React.ReactNode;
 }) {
   prefetch(trpcServer.categories.getMany.queryOptions());
-  const session = await trpcServerCaller.auth.session();
-
-  if (!session?.user) {
-    redirect('/sign-in');
-  }
 
   return (
     <main className='flex min-h-screen w-full flex-col overflow-y-auto'>
