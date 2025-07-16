@@ -29,9 +29,9 @@ export const productsRouter = createTRPCRouter({
         const categorySlugs = [input.category];
 
         if (category) {
-          const subCategories = category.subCategories?.docs as
-            | Category[]
-            | undefined;
+          const subCategories = category.subCategories?.docs?.filter(
+            (doc): doc is Category => typeof doc === 'object' && doc !== null
+          ) as Category[] | undefined;
 
           // check this category has sub categories, if it does, add all sub category slugs to the where clause
           if (subCategories) {
