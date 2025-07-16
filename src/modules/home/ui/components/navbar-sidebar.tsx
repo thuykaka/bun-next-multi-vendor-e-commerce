@@ -1,6 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { NavbarItem } from '@/types/navbar';
-import { LogInIcon, ShoppingBagIcon } from 'lucide-react';
+import { LayoutDashboardIcon, LogInIcon, ShoppingBagIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTRPC } from '@/trpc/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sheet,
@@ -21,6 +23,9 @@ export default function NavbarSidebar({
   isOpen,
   onOpenChange
 }: NavbarSidebarProps) {
+  const trpc = useTRPC();
+  const { data: session } = useQuery(trpc.auth.session.queryOptions());
+
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent side='left' className='p-0 transition-none'>
@@ -43,22 +48,35 @@ export default function NavbarSidebar({
             </Link>
           ))}
           <div className='border-t'>
-            <Link
-              href='/sign-in'
-              className='hover:bg-accent hover:text-accent-foreground flex w-full items-center p-4 text-left text-base font-medium'
-              onClick={() => onOpenChange(false)}
-            >
-              <LogInIcon className='size-4' />
-              <span className='ml-2'>Login</span>
-            </Link>
-            <Link
-              href='/sign-up'
-              className='hover:bg-accent hover:text-accent-foreground flex w-full items-center p-4 text-left text-base font-medium'
-              onClick={() => onOpenChange(false)}
-            >
-              <ShoppingBagIcon className='size-4' />
-              <span className='ml-2'>Start Selling</span>
-            </Link>
+            {!!session?.user ? (
+              <Link
+                href='/admin'
+                className='hover:bg-accent hover:text-accent-foreground flex w-full items-center p-4 text-left text-base font-medium'
+                onClick={() => onOpenChange(false)}
+              >
+                <LayoutDashboardIcon className='size-4' />
+                <span className='ml-2'>Dashboard</span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href='/sign-in'
+                  className='hover:bg-accent hover:text-accent-foreground flex w-full items-center p-4 text-left text-base font-medium'
+                  onClick={() => onOpenChange(false)}
+                >
+                  <LogInIcon className='size-4' />
+                  <span className='ml-2'>Login</span>
+                </Link>
+                <Link
+                  href='/sign-up'
+                  className='hover:bg-accent hover:text-accent-foreground flex w-full items-center p-4 text-left text-base font-medium'
+                  onClick={() => onOpenChange(false)}
+                >
+                  <ShoppingBagIcon className='size-4' />
+                  <span className='ml-2'>Start Selling</span>
+                </Link>
+              </>
+            )}
           </div>
         </ScrollArea>
       </SheetContent>

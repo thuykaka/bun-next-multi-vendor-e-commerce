@@ -1,10 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { NavbarItem } from '@/types/navbar';
-import { LogInIcon, MenuIcon, ShoppingBagIcon } from 'lucide-react';
+import {
+  LayoutDashboardIcon,
+  LogInIcon,
+  MenuIcon,
+  ShoppingBagIcon
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTRPC } from '@/trpc/client';
 import { cn } from '@/lib/utils';
 import { useScroll } from '@/hooks/use-scroll';
 import { Button } from '@/components/ui/button';
@@ -45,6 +52,9 @@ export default function Navbar() {
   const isScrolled = useScroll();
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
 
+  const trpc = useTRPC();
+  const { data: session } = useQuery(trpc.auth.session.queryOptions());
+
   return (
     <nav
       className={cn(
@@ -79,18 +89,29 @@ export default function Navbar() {
         </div>
 
         <div className='hidden gap-x-4 lg:flex'>
-          <Button variant='outline' asChild>
-            <Link href='/sign-in' prefetch>
-              <LogInIcon className='size-4' />
-              Login
-            </Link>
-          </Button>
-          <Button variant='default' asChild>
-            <Link href='/sign-up' prefetch>
-              <ShoppingBagIcon className='size-4' />
-              Start Selling
-            </Link>
-          </Button>
+          {!!session?.user ? (
+            <Button variant='default' asChild>
+              <Link href='/admin' prefetch>
+                <LayoutDashboardIcon className='size-4' />
+                Dashboard
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant='outline' asChild>
+                <Link href='/sign-in' prefetch>
+                  <LogInIcon className='size-4' />
+                  Login
+                </Link>
+              </Button>
+              <Button variant='default' asChild>
+                <Link href='/sign-up' prefetch>
+                  <ShoppingBagIcon className='size-4' />
+                  Start Selling
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <div className='flex items-center justify-center lg:hidden'>
