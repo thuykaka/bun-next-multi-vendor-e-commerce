@@ -1,3 +1,4 @@
+import 'server-only';
 import { cookies as getCookies } from 'next/headers';
 
 export const setCookie = async (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { ListFilterIcon } from 'lucide-react';
@@ -18,6 +18,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger
 } from '@/components/ui/navigation-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 import CategoriesSidebar from './categories-sidebar';
 
 export default function Categories() {
@@ -28,9 +29,22 @@ export default function Categories() {
   const isMobile = useIsMobile();
   const maxVisibleCategories = useVisibleCategories();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const visibleCategories = data.docs.slice(0, maxVisibleCategories);
   const hasMoreCategories = data.docs.length > maxVisibleCategories;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className='w-full'>
+        <Skeleton className='bg-accent/50 h-9 w-full' />
+      </div>
+    );
+  }
 
   return (
     <div className='w-full'>
