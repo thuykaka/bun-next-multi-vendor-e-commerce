@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { ListFilterIcon } from 'lucide-react';
@@ -30,15 +30,21 @@ export default function Categories() {
   const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
 
   const activeCategorySlug = params.category || 'all';
+
   const activeCategory = data.docs.find(
     (category) => category.slug === activeCategorySlug
   );
-  const activeSubCategoryName = (
-    activeCategory?.subCategories?.docs as Category[]
-  )?.find(
-    (subCategory) =>
-      typeof subCategory !== 'string' && subCategory.slug === params.subCategory
-  )?.name;
+
+  const activeSubCategoryName = useMemo(() => {
+    if (!activeCategory?.subCategories?.docs || !params.subCategory) {
+      return undefined;
+    }
+
+    const subCategories = activeCategory.subCategories.docs as Category[];
+    return subCategories.find(
+      (subCategory) => subCategory.slug === params.subCategory
+    )?.name;
+  }, [activeCategory, params.subCategory]);
 
   const isMobile = useIsMobile();
   const maxVisibleCategories = useVisibleCategories();
