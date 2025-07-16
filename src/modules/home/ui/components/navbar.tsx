@@ -80,13 +80,13 @@ export default function Navbar() {
 
         <div className='hidden gap-x-4 lg:flex'>
           <Button variant='outline' asChild>
-            <Link href='/sign-in'>
+            <Link href='/sign-in' prefetch>
               <LogInIcon className='size-4' />
               Login
             </Link>
           </Button>
           <Button variant='default' asChild>
-            <Link href='/sign-up'>
+            <Link href='/sign-up' prefetch>
               <ShoppingBagIcon className='size-4' />
               Start Selling
             </Link>

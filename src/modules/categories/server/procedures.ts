@@ -1,4 +1,3 @@
-import { TRPCError } from '@trpc/server';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 
 export const categoriesRouter = createTRPCRouter({
