@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { TRPCReactProvider } from '@/trpc/client';
 import { fontVariables } from '@/lib/font';
 import { cn } from '@/lib/utils';
@@ -27,15 +28,17 @@ export default function RootLayout({
       >
         <NextTopLoader showSpinner={false} color='var(--primary)' />
         <TRPCReactProvider>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Toaster richColors />
-            {children}
-          </ThemeProvider>
+          <NuqsAdapter>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster richColors />
+              {children}
+            </ThemeProvider>
+          </NuqsAdapter>
         </TRPCReactProvider>
       </body>
     </html>
