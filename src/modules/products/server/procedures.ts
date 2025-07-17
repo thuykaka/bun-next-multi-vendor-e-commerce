@@ -85,7 +85,7 @@ export const productsRouter = createTRPCRouter({
 
       const products = await ctx.payloadcms.find({
         collection: 'products',
-        depth: 1, // Get all fields of related collections e.g, category, images, etc.
+        depth: 2, // Get all fields of related collections e.g, category, images, etc.
         where,
         sort,
         page: input.cursor,

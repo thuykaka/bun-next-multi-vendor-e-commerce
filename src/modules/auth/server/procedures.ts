@@ -54,9 +54,25 @@ export const authRouter = createTRPCRouter({
         });
       }
 
+      const tenant = await ctx.payloadcms.create({
+        collection: 'tenants',
+        data: {
+          name: input.username,
+          slug: input.username,
+          stripeAccountId: 'test_account_id'
+        }
+      });
+
       await ctx.payloadcms.create({
         collection: 'users',
-        data: input
+        data: {
+          ...input,
+          tenants: [
+            {
+              tenant: tenant.id
+            }
+          ]
+        }
       });
 
       const data = await ctx.payloadcms.login({
