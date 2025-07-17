@@ -1,6 +1,6 @@
-import { ChangeEvent, useState } from 'react';
-import { Input } from '@/components/ui/input';
+import { ChangeEvent } from 'react';
 import { Label } from '@/components/ui/label';
+import { InputDebounce } from '@/components/input-debounce';
 
 type PriceFilterProps = {
   minPrice?: string;
@@ -34,37 +34,41 @@ export function PriceFilter({
   onMinPriceChange,
   onMaxPriceChange
 }: PriceFilterProps) {
-  const handlePriceChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    priceType: 'min' | 'max'
-  ) => {
-    const value = e.target.value;
+  const handlePriceChange = (value: string, priceType: 'min' | 'max') => {
     const numericValue = value.replace(/[^0-9.]/g, '');
     priceType === 'min'
       ? onMinPriceChange(numericValue)
       : onMaxPriceChange(numericValue);
   };
 
+  const handleMinPriceChange = (value: string) => {
+    handlePriceChange(value, 'min');
+  };
+
+  const handleMaxPriceChange = (value: string) => {
+    handlePriceChange(value, 'max');
+  };
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex flex-col gap-2'>
         <Label className='text-base font-medium'>Min Price</Label>
-        <Input
+        <InputDebounce
           type='text'
-          className='border-border placeholder:text-muted-foreground/50'
+          className='border-border bg-background placeholder:text-muted-foreground/50'
           placeholder='$0'
           value={minPrice ? formatAsCurrency(minPrice) : ''}
-          onChange={(e) => handlePriceChange(e, 'min')}
+          onChange={handleMinPriceChange}
         />
       </div>
       <div className='flex flex-col gap-2'>
         <Label className='text-base font-medium'>Max Price</Label>
-        <Input
+        <InputDebounce
           type='text'
           placeholder='$9999'
-          className='border-border placeholder:text-muted-foreground/50'
+          className='border-border bg-background placeholder:text-muted-foreground/50'
           value={maxPrice ? formatAsCurrency(maxPrice) : ''}
-          onChange={(e) => handlePriceChange(e, 'max')}
+          onChange={handleMaxPriceChange}
         />
       </div>
     </div>

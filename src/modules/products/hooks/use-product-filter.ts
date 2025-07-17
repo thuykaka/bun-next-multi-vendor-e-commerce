@@ -1,4 +1,9 @@
-import { parseAsString, parseAsInteger, useQueryStates } from 'nuqs';
+import {
+  parseAsString,
+  parseAsArrayOf,
+  useQueryStates,
+  parseAsStringLiteral
+} from 'nuqs';
 
 export const useProductFilter = () => {
   return useQueryStates({
@@ -7,6 +12,14 @@ export const useProductFilter = () => {
     }),
     maxPrice: parseAsString.withDefault('').withOptions({
       clearOnDefault: true
-    })
+    }),
+    tags: parseAsArrayOf(parseAsString).withDefault([]).withOptions({
+      clearOnDefault: true
+    }),
+    sort: parseAsStringLiteral(['curated', 'trending', 'hot_and_new'])
+      .withDefault('curated')
+      .withOptions({
+        clearOnDefault: true
+      })
   });
 };
