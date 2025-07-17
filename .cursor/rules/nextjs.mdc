@@ -78,6 +78,7 @@ Performance Optimization
 
 - Optimize for both web and mobile performance.
 - Use dynamic imports for code splitting in Next.js.
+- Use alias import, for example `import { useProductFilter } from '@/modules/products/hooks/use-product-filter';`
 - Implement lazy loading for non-critical components.
 - Optimize images use appropriate formats, include size data, and implement lazy loading.
 - Using tanstack prefetchQuery in server and useSuspenseQuery in client with HydrationBoundary

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Category } from '@/payload-types';
-import type { Where } from 'payload';
+import type { Where, Sort } from 'payload';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 
 export const productsRouter = createTRPCRouter({
@@ -9,11 +9,23 @@ export const productsRouter = createTRPCRouter({
       z.object({
         category: z.string().nullable().optional(),
         minPrice: z.string().nullable().optional(),
-        maxPrice: z.string().nullable().optional()
+        maxPrice: z.string().nullable().optional(),
+        tags: z.array(z.string()).nullable().optional(),
+        sort: z
+          .enum(['curated', 'trending', 'hot_and_new'])
+          .nullable()
+          .optional()
       })
     )
     .query(async ({ ctx, input }) => {
       const where: Where = {};
+      let sort: Sort = '-name';
+
+      if (input.sort === 'trending') {
+        sort = '+name';
+      } else if (input.sort === 'hot_and_new') {
+        sort = '+name';
+      }
 
       if (input.minPrice) {
         where['price'] = {
@@ -26,6 +38,12 @@ export const productsRouter = createTRPCRouter({
         where['price'] = {
           ...where['price'],
           less_than_equal: Number(input.maxPrice)
+        };
+      }
+
+      if (input.tags && input.tags.length > 0) {
+        where['tags.name'] = {
+          in: input.tags
         };
       }
 
@@ -65,7 +83,8 @@ export const productsRouter = createTRPCRouter({
       const products = await ctx.payloadcms.find({
         collection: 'products',
         depth: 1, // Get all fields of related collections e.g, category, images, etc.
-        where
+        where,
+        sort
       });
 
       return products;
