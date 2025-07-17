@@ -16,6 +16,8 @@ export function TagsFilter({ values, onChange }: TagsFilterProps) {
   const {
     data: tags,
     isPending,
+    isError,
+    refetch,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
@@ -40,6 +42,17 @@ export function TagsFilter({ values, onChange }: TagsFilterProps) {
       onChange([...values, tag]);
     }
   };
+
+  if (isError) {
+    return (
+      <p className='text-muted-foreground text-sm text-balance'>
+        Error loading tags, please{' '}
+        <span onClick={() => refetch()} className='cursor-pointer underline'>
+          try again.
+        </span>
+      </p>
+    );
+  }
 
   return (
     <div className='flex flex-col gap-y-2'>

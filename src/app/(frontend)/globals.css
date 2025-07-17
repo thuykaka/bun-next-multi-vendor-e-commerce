@@ -156,8 +156,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    background: radial-gradient(#dadde2 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  
+  .dark body {
+    background: radial-gradient(#393e4a 1px, transparent 1px);
+    background-size: 16px 16px;
   }
 
   button:not([disabled]),
