@@ -5,7 +5,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { ListFilterIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -110,7 +110,7 @@ export default function Categories() {
                       >
                         {category.name}
                       </NavigationMenuTrigger>
-                      <NavigationMenuContent>
+                      <NavigationMenuContent className='z-50'>
                         <ul className='grid w-full min-w-[200px] gap-4 truncate'>
                           {(category.subCategories?.docs as Category[])?.map(
                             (subCategory) => (
@@ -130,7 +130,11 @@ export default function Categories() {
                     </>
                   ) : (
                     <NavigationMenuLink asChild data-active={isActive}>
-                      <Link href={`/${category.slug}`}>{category.name}</Link>
+                      <Link
+                        href={`/${category.slug === 'all' ? '' : category.slug}`}
+                      >
+                        {category.name}
+                      </Link>
                     </NavigationMenuLink>
                   )}
                 </NavigationMenuItem>

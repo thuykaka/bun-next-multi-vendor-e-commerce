@@ -1,5 +1,26 @@
-import HomeView from '@/modules/home/ui/views/home-view';
+import type { SearchParams } from 'nuqs';
+import { HydrateClient, prefetch, trpcServer } from '@/trpc/server';
+import { loadProductsSearchParams } from '@/modules/products/params';
+import { ProductListView } from '@/modules/products/ui/views/product-list-view';
 
-export default function Home() {
-  return <HomeView />;
+type CategoryPageProps = {
+  searchParams: Promise<SearchParams>;
+};
+
+export default async function CategoryPage({
+  searchParams
+}: CategoryPageProps) {
+  const productsSearchParams = await loadProductsSearchParams(searchParams);
+
+  prefetch(
+    trpcServer.products.getMany.infiniteQueryOptions({
+      ...productsSearchParams
+    })
+  );
+
+  return (
+    <HydrateClient>
+      <ProductListView />
+    </HydrateClient>
+  );
 }

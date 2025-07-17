@@ -142,6 +142,28 @@ const seed = async () => {
     config: payloadConfig
   });
 
+  // Create admin tenant
+  const adminTenant = await payload.create({
+    collection: 'tenants',
+    data: {
+      name: 'admin',
+      slug: 'admin',
+      stripeAccountId: 'test_account_id'
+    }
+  });
+
+  // Create super admin user
+  await payload.create({
+    collection: 'users',
+    data: {
+      username: 'thuykaka',
+      email: 'thuykaka@funroad.com',
+      password: '25251325',
+      roles: ['super-admin'],
+      tenants: [{ tenant: adminTenant.id }]
+    }
+  });
+
   for (const category of categories) {
     const { subCategories, ...data } = category;
 

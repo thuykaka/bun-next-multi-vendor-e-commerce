@@ -1,7 +1,7 @@
 'use client';
 
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
-import type { Media } from '@/payload-types';
+import type { Media, Tenant } from '@/payload-types';
 import { InboxIcon, Loader2Icon } from 'lucide-react';
 import { useTRPC } from '@/trpc/client';
 import { DEFAULT_LIMIT } from '@/constants/biz';
@@ -11,12 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type ProductListProps = {
-  category: string;
+  category?: string | null;
 };
 
 export function ProductList({ category }: ProductListProps) {
   const [filters] = useProductFilter();
   const trpc = useTRPC();
+
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery(
       trpc.products.getMany.infiniteQueryOptions(
@@ -51,8 +52,8 @@ export function ProductList({ category }: ProductListProps) {
               id={product.id}
               name={product.name}
               imageUrl={(product.images as Media[] | undefined)?.[0]?.url}
-              authorName='thuykaka'
-              authorAvatarUrl={undefined}
+              authorName={(product.tenant as Tenant)?.name}
+              authorAvatarUrl={((product.tenant as Tenant)?.logo as Media)?.url}
               reviewRating={3}
               reviewCount={5}
               price={product.price}
@@ -81,7 +82,7 @@ export function ProductList({ category }: ProductListProps) {
 export function ProductListSkeleton() {
   return (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
-      {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+      {Array.from({ length: Math.min(DEFAULT_LIMIT, 12) }).map((_, index) => (
         <div
           key={index}
           className='bg-card flex flex-col gap-2 rounded-md border p-4'

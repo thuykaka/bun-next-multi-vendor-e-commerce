@@ -16,7 +16,7 @@ export default async function CategoryPage({
   const productsSearchParams = await loadProductsSearchParams(searchParams);
 
   prefetch(
-    trpcServer.products.getMany.queryOptions({
+    trpcServer.products.getMany.infiniteQueryOptions({
       category,
       ...productsSearchParams
     })

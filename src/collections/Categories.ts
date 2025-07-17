@@ -3,7 +3,8 @@ import type { CollectionConfig } from 'payload';
 export const Categories: CollectionConfig = {
   slug: 'categories',
   admin: {
-    useAsTitle: 'name'
+    useAsTitle: 'name',
+    preview: ({ slug }) => `http://localhost:3000/${slug}`
   },
   access: {
     read: () => true

@@ -9,7 +9,7 @@ import {
 import { ProductSort } from '@/modules/products/ui/components/product-sort';
 
 type ProductListViewProps = {
-  category: string;
+  category?: string | null;
 };
 
 export function ProductListView({ category }: ProductListViewProps) {

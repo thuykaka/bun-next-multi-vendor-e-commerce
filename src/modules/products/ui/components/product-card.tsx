@@ -9,7 +9,7 @@ type ProductCardProps = {
   name: string;
   imageUrl?: string | null;
   authorName: string;
-  authorAvatarUrl?: string;
+  authorAvatarUrl?: string | null;
   reviewRating: number;
   reviewCount: number;
   price: number;
@@ -55,11 +55,11 @@ export function ProductCard({
               <div className='shrink-0 text-right'>
                 <div className='flex items-center gap-1'>
                   <StarIcon className='h-4 w-4' />
-                  <span className='text-sm font-medium'>{reviewRating}</span>
+                  <span className='font-medium'>{reviewRating}</span>
                 </div>
-                <div className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-xs'>
                   {reviewCount} reviews
-                </div>
+                </p>
               </div>
             )}
           </div>

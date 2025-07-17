@@ -13,6 +13,7 @@
     "format:check": "prettier -c -w .",
     "prepare": "husky",
     "payload:generate": "payload generate:types",
+    "payload:importmap": "payload generate:importmap",
     "payload:db-fresh": "payload migrate:fresh",
     "payload:db-seed": "bun run src/seed.ts"
   },
@@ -26,6 +27,7 @@
     "@payloadcms/db-mongodb": "^3.47.0",
     "@payloadcms/next": "^3.47.0",
     "@payloadcms/payload-cloud": "^3.47.0",
+    "@payloadcms/plugin-multi-tenant": "^3.47.0",
     "@payloadcms/richtext-lexical": "^3.47.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -57,6 +59,7 @@
     "@trpc/client": "^11.4.3",
     "@trpc/server": "^11.4.3",
     "@trpc/tanstack-react-query": "^11.4.3",
+    "add": "^2.0.6",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
