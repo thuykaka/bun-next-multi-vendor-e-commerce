@@ -13,7 +13,17 @@ export function ProductList({ category }: ProductListProps) {
     trpc.products.getMany.queryOptions({ category })
   );
 
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  return (
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
+      {data?.docs?.map((product) => (
+        <div key={product.id} className='rounded-md border bg-white p-4'>
+          <h2 className='text-xl font-medium'>{product.name}</h2>
+          <p>{product.description}</p>
+          <p>{product.price}</p>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function ProductListSkeleton() {
