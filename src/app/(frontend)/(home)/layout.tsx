@@ -16,7 +16,6 @@ export default async function HomeLayout({
       <HydrateClient>
         <SearchFilters />
       </HydrateClient>
-      <div className='bg-background absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#dadde2_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#393e4a_1px,transparent_1px)]' />
       <div className='flex min-h-0 flex-1 flex-col gap-4 p-4 lg:px-10'>
         {children}
       </div>

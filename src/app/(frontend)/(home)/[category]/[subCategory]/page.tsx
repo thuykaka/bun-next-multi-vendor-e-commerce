@@ -1,25 +1,30 @@
+import type { SearchParams } from 'nuqs';
 import { HydrateClient, prefetch, trpcServer } from '@/trpc/server';
-import {
-  ProductListError,
-  ProductList,
-  ProductListSkeleton
-} from '@/modules/products/ui/components/product-list';
+import { loadProductsSearchParams } from '@/modules/products/params';
+import { ProductListView } from '@/modules/products/ui/views/product-list-view';
 
-type CategoryPageProps = {
+type SubCategoryPageProps = {
+  searchParams: Promise<SearchParams>;
   params: Promise<{ subCategory: string }>;
 };
 
-export default async function SubCategoryPage({ params }: CategoryPageProps) {
+export default async function SubCategoryPage({
+  params,
+  searchParams
+}: SubCategoryPageProps) {
   const { subCategory } = await params;
+  const productsSearchParams = await loadProductsSearchParams(searchParams);
 
-  prefetch(trpcServer.products.getMany.queryOptions({ category: subCategory }));
+  prefetch(
+    trpcServer.products.getMany.queryOptions({
+      category: subCategory,
+      ...productsSearchParams
+    })
+  );
 
   return (
-    <HydrateClient
-      errorFallback={<ProductListError />}
-      suspenseFallback={<ProductListSkeleton />}
-    >
-      <ProductList category={subCategory} />
+    <HydrateClient>
+      <ProductListView category={subCategory} />
     </HydrateClient>
   );
 }

@@ -1,8 +1,13 @@
 'use client';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import type { Media } from '@/payload-types';
+import { InboxIcon, Loader2Icon } from 'lucide-react';
 import { useTRPC } from '@/trpc/client';
+import { DEFAULT_LIMIT } from '@/constants/biz';
 import { useProductFilter } from '@/modules/products/hooks/use-product-filter';
+import { ProductCard } from '@/modules/products/ui/components/product-card';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type ProductListProps = {
@@ -12,24 +17,63 @@ type ProductListProps = {
 export function ProductList({ category }: ProductListProps) {
   const [filters] = useProductFilter();
   const trpc = useTRPC();
-  const { data, isPending } = useSuspenseQuery(
-    trpc.products.getMany.queryOptions({ category, ...filters })
-  );
+  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useSuspenseInfiniteQuery(
+      trpc.products.getMany.infiniteQueryOptions(
+        { category, ...filters },
+        {
+          getNextPageParam: (lastPage) =>
+            lastPage.docs.length > 0 ? lastPage.nextPage : undefined
+        }
+      )
+    );
 
-  if (isPending) return <ProductListSkeleton />;
+  if (data?.pages?.[0]?.docs.length === 0) {
+    return (
+      <div className='border-card bg-card flex min-h-[300px] w-full flex-col items-center justify-center gap-y-4 rounded-md border p-8 lg:min-h-[500px]'>
+        <InboxIcon />
+        <p className='text-base font-medium'>No products found</p>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h2 className='p-4 pt-0 font-medium'>{data?.totalDocs} products found</h2>
+      <h2 className='p-4 pt-0 font-medium'>
+        {data?.pages?.[0]?.totalDocs} products found
+      </h2>
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
-        {data?.docs?.map((product) => (
-          <div key={product.id} className='bg-card rounded-md border p-4'>
-            <h2 className='text-xl font-medium'>{product.name}</h2>
-            <p>{product.description}</p>
-            <p>{product.price}</p>
-          </div>
-        ))}
+        {data?.pages
+          ?.flatMap((page) => page.docs)
+          .map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              imageUrl={(product.images as Media[] | undefined)?.[0]?.url}
+              authorName='thuykaka'
+              authorAvatarUrl={undefined}
+              reviewRating={3}
+              reviewCount={5}
+              price={product.price}
+            />
+          ))}
       </div>
+      {hasNextPage && (
+        <div className='flex items-center justify-center pt-8'>
+          <Button
+            variant='outline'
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            size='sm'
+          >
+            {isFetchingNextPage && (
+              <Loader2Icon className='size-4 animate-spin' />
+            )}
+            Load more...
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -37,7 +81,7 @@ export function ProductList({ category }: ProductListProps) {
 export function ProductListSkeleton() {
   return (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
-      {Array.from({ length: 12 }).map((_, index) => (
+      {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
         <div
           key={index}
           className='bg-card flex flex-col gap-2 rounded-md border p-4'
