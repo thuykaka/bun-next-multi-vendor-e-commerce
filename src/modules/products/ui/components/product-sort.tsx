@@ -23,8 +23,8 @@ export function ProductSort() {
       }}
       defaultValue={filters.sort}
     >
-      <SelectTrigger className='bg-card w-[180px]'>
-        <SelectValue placeholder='Theme' />
+      <SelectTrigger className='bg-card! w-[180px]'>
+        <SelectValue placeholder='Curated' />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value='curated'>Curated</SelectItem>

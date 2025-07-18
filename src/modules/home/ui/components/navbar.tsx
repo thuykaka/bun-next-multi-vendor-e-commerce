@@ -21,6 +21,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList
 } from '@/components/ui/navigation-menu';
+import { ThemeToggle } from '@/components/theme-toggle';
 import Logo from './logo';
 import NavbarSidebar from './navbar-sidebar';
 
@@ -89,7 +90,7 @@ export default function Navbar() {
           </NavigationMenu>
         </div>
 
-        <div className='hidden gap-x-4 lg:flex'>
+        <div className='hidden items-center gap-x-4 lg:flex'>
           {!!session?.user ? (
             <Button variant='default' asChild>
               <Link href='/admin' prefetch>
@@ -113,12 +114,15 @@ export default function Navbar() {
               </Button>
             </>
           )}
+          <div>
+            <ThemeToggle />
+          </div>
         </div>
 
         <div className='flex items-center justify-center lg:hidden'>
           <Button
             variant='ghost'
-            className='size-15 border-transparent bg-white'
+            className='bg-background size-15 border-transparent'
             asChild
             onClick={() => setIsOpenSidebar(true)}
           >

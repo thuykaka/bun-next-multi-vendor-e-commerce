@@ -12,16 +12,17 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 type ProductListProps = {
   category?: string | null;
+  tenantSlug?: string | null;
 };
 
-export function ProductList({ category }: ProductListProps) {
+export function ProductList({ category, tenantSlug }: ProductListProps) {
   const [filters] = useProductFilter();
   const trpc = useTRPC();
 
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery(
       trpc.products.getMany.infiniteQueryOptions(
-        { category, ...filters },
+        { category, tenantSlug, ...filters },
         {
           getNextPageParam: (lastPage) =>
             lastPage.docs.length > 0 ? lastPage.nextPage : undefined
@@ -51,9 +52,10 @@ export function ProductList({ category }: ProductListProps) {
               key={product.id}
               id={product.id}
               name={product.name}
-              imageUrl={(product.images as Media[] | undefined)?.[0]?.url}
-              authorName={(product.tenant as Tenant)?.name}
-              authorAvatarUrl={((product.tenant as Tenant)?.logo as Media)?.url}
+              imageUrl={product.images?.[0]?.url}
+              authorSlug={product.tenant.slug}
+              authorName={product.tenant.name}
+              authorAvatarUrl={product.tenant.logo?.url}
               reviewRating={3}
               reviewCount={5}
               price={product.price}

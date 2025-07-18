@@ -1,6 +1,8 @@
 import { ShoppingCartIcon, StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { getTenantUrl } from '@/lib/tenants';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 
@@ -9,6 +11,7 @@ type ProductCardProps = {
   name: string;
   imageUrl?: string | null;
   authorName: string;
+  authorSlug: string;
   authorAvatarUrl?: string | null;
   reviewRating: number;
   reviewCount: number;
@@ -20,11 +23,20 @@ export function ProductCard({
   name,
   imageUrl,
   authorName,
+  authorSlug,
   authorAvatarUrl,
   reviewRating,
   reviewCount,
   price
 }: ProductCardProps) {
+  const router = useRouter();
+
+  const handleOpenTenantPage = (e: React.MouseEvent<HTMLParagraphElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(getTenantUrl(authorSlug));
+  };
+
   return (
     <Link href={`/products/${id}`}>
       <div className='bg-card flex flex-col overflow-hidden rounded-md border'>
@@ -33,6 +45,7 @@ export function ProductCard({
             src={imageUrl || '/product.png'}
             alt={name}
             fill
+            sizes='33vw'
             className='object-cover transition-all hover:scale-105'
           />
         </AspectRatio>
@@ -48,7 +61,9 @@ export function ProductCard({
                   height={16}
                   className='size-[16px] shrink-0 rounded-full border'
                 />
-                <p className='text-sm underline'>{authorName}</p>
+                <p className='text-sm underline' onClick={handleOpenTenantPage}>
+                  {authorName}
+                </p>
               </div>
             </div>
             {reviewCount > 0 && (
