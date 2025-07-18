@@ -2,6 +2,7 @@ import { ShoppingCartIcon, StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { formatPriceCurrency } from '@/lib/format';
 import { getTenantUrl } from '@/lib/tenants';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,7 @@ export function ProductCard({
   };
 
   return (
-    <Link href={`/products/${id}`}>
+    <Link href={`${getTenantUrl(authorSlug)}/products/${id}`}>
       <div className='bg-card flex flex-col overflow-hidden rounded-md border'>
         <AspectRatio ratio={4 / 3}>
           <Image
@@ -80,13 +81,7 @@ export function ProductCard({
           </div>
           <div className='mt-4 flex items-center justify-between'>
             <div className='flex items-center gap-2'>
-              <span className='font-medium'>
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 2
-                }).format(Number(price))}
-              </span>
+              <span className='font-medium'>{formatPriceCurrency(price)}</span>
             </div>
             <Button variant='outline' size='sm'>
               <ShoppingCartIcon className='mr-1 h-4 w-4' />
