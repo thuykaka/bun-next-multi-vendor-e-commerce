@@ -6,6 +6,7 @@ import { getTenantUrl } from '@/lib/tenants';
 import { cn } from '@/lib/utils';
 import Logo from '@/modules/home/ui/components/logo';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type TenantNavbarProps = {
   slug: string;
@@ -32,6 +33,9 @@ export function TenantNavbar({ slug }: TenantNavbarProps) {
             logo={tenant.logo?.url}
             link={getTenantUrl(slug)}
           />
+        </div>
+        <div>
+          <ThemeToggle />
         </div>
       </div>
     </nav>

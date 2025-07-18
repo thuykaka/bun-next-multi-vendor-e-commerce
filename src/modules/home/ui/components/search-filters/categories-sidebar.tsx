@@ -69,7 +69,7 @@ export default function CategoriesSidebar({
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent side='left' className='bg-white p-0 transition-none'>
+      <SheetContent side='left' className='p-0 transition-none'>
         <SheetHeader className='border-b'>
           <SheetTitle>Categories</SheetTitle>
         </SheetHeader>
