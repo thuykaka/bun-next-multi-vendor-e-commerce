@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Category } from '@/payload-types';
+import { Category, Media, Tenant } from '@/payload-types';
 import type { Where, Sort } from 'payload';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 import { DEFAULT_LIMIT } from '@/constants/biz';
@@ -17,7 +17,8 @@ export const productsRouter = createTRPCRouter({
         sort: z
           .enum(['curated', 'trending', 'hot_and_new'])
           .nullable()
-          .optional()
+          .optional(),
+        tenantSlug: z.string().nullable().optional()
       })
     )
     .query(async ({ ctx, input }) => {
@@ -47,6 +48,12 @@ export const productsRouter = createTRPCRouter({
       if (input.tags && input.tags.length > 0) {
         where['tags.name'] = {
           in: input.tags
+        };
+      }
+
+      if (input.tenantSlug) {
+        where['tenant.slug'] = {
+          equals: input.tenantSlug
         };
       }
 
@@ -92,6 +99,15 @@ export const productsRouter = createTRPCRouter({
         limit: input.limit
       });
 
-      return products;
+      return {
+        ...products,
+        docs: products.docs.map((product) => ({
+          ...product,
+          images: product.images as Media[] | null,
+          tenant: product.tenant as Tenant & {
+            logo: Media | null;
+          }
+        }))
+      };
     })
 });
