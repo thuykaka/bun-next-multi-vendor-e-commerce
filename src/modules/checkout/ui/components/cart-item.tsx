@@ -1,0 +1,80 @@
+import { Trash2Icon, MinusIcon, PlusIcon } from 'lucide-react';
+import Image from 'next/image';
+import { formatPriceCurrency } from '@/lib/format';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
+type CartItemProps = {
+  name: string;
+  price: number;
+  quantity: number;
+  imageUrl?: string | null;
+  onRemove: () => void;
+  onUpdateQuantity: (quantity: number) => void;
+};
+
+export function CartItem({
+  name,
+  price,
+  quantity,
+  imageUrl,
+  onRemove,
+  onUpdateQuantity
+}: CartItemProps) {
+  return (
+    <Card className='overflow-hidden p-0'>
+      <CardContent className='p-0'>
+        <div className='flex h-full flex-col md:flex-row'>
+          <div className='relative h-auto w-full md:w-32'>
+            <Image
+              src={imageUrl || '/product.png'}
+              alt={name}
+              width={100}
+              height={100}
+              className='h-[250px] w-full object-cover md:w-32 lg:h-[150px]'
+            />
+          </div>
+          <div className='flex-1 p-6 pb-3'>
+            <div className='flex justify-between'>
+              <div>
+                <h3 className='font-medium'>{name}</h3>
+              </div>
+              <Button variant='ghost' size='icon' onClick={onRemove}>
+                <Trash2Icon className='size-4' />
+              </Button>
+            </div>
+
+            <div className='mt-4 flex items-center justify-between'>
+              <div className='flex items-center gap-1'>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={() => onUpdateQuantity(-1)}
+                >
+                  <MinusIcon className='size-4' />
+                </Button>
+                <span className='w-8 text-center'>{quantity}</span>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={() => onUpdateQuantity(1)}
+                >
+                  <PlusIcon className='size-4' />
+                </Button>
+              </div>
+
+              <div className='text-right'>
+                <div className='font-medium'>{formatPriceCurrency(price)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function CartItemSkeleton() {
+  return <Skeleton className='h-[250px] w-full object-cover lg:h-[150px]' />;
+}
