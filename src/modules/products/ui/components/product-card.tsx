@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatPriceCurrency } from '@/lib/format';
 import { getTenantUrl } from '@/lib/tenants';
+import { CartButton } from '@/modules/products/ui/components/cart-button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 
@@ -83,10 +84,6 @@ export function ProductCard({
             <div className='flex items-center gap-2'>
               <span className='font-medium'>{formatPriceCurrency(price)}</span>
             </div>
-            <Button variant='outline' size='sm'>
-              <ShoppingCartIcon className='mr-1 h-4 w-4' />
-              Add
-            </Button>
           </div>
         </div>
       </div>

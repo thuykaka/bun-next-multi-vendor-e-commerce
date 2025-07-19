@@ -4,6 +4,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/trpc/client';
 import { getTenantUrl } from '@/lib/tenants';
 import { cn } from '@/lib/utils';
+import { CheckoutButton } from '@/modules/checkout/ui/components/checkout-button';
 import Logo from '@/modules/home/ui/components/logo';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -34,7 +35,8 @@ export function TenantNavbar({ slug }: TenantNavbarProps) {
             link={getTenantUrl(slug)}
           />
         </div>
-        <div>
+        <div className='flex items-center gap-x-4'>
+          <CheckoutButton tenantSlug={slug} />
           <ThemeToggle />
         </div>
       </div>
