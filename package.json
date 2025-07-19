@@ -15,7 +15,8 @@
     "payload:generate": "payload generate:types",
     "payload:importmap": "payload generate:importmap",
     "payload:db-fresh": "payload migrate:fresh",
-    "payload:db-seed": "bun run src/seed.ts"
+    "payload:db-seed": "bun run src/seed.ts",
+    "stripe:webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
   },
   "lint-staged": {
     "**/*.{js,jsx,tsx,ts}": [
@@ -86,6 +87,7 @@
     "server-only": "^0.0.1",
     "slugify": "^1.6.6",
     "sonner": "^2.0.6",
+    "stripe": "^18.3.0",
     "superjson": "^2.2.2",
     "tailwind-merge": "^3.3.1",
     "use-broadcast-ts": "^2.0.1",
