@@ -1,10 +1,13 @@
 import {
+  AlertCircleIcon,
   CreditCardIcon,
+  Loader2,
   Package2Icon,
   ShieldIcon,
   TruckIcon
 } from 'lucide-react';
 import { formatPriceCurrency } from '@/lib/format';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,11 +21,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 type CheckoutSidebarProps = {
   totalPrice: number;
   onCheckout: () => void;
+  isPending: boolean;
+  isCancel: boolean;
 };
 
 export function CheckoutSidebar({
   totalPrice,
-  onCheckout
+  onCheckout,
+  isPending,
+  isCancel
 }: CheckoutSidebarProps) {
   return (
     <Card>
@@ -63,10 +70,32 @@ export function CheckoutSidebar({
           </div>
         </div>
 
-        <Button className='w-full px-4 py-2' onClick={onCheckout}>
-          <CreditCardIcon className='size-4' />
-          Proceed to Checkout
+        <Button
+          className='w-full px-4 py-2'
+          onClick={onCheckout}
+          disabled={isPending}
+        >
+          {isPending ? (
+            <>
+              <Loader2 className='size-4 animate-spin' />
+              Processing...
+            </>
+          ) : (
+            <>
+              <CreditCardIcon className='size-4' />
+              Proceed to Checkout
+            </>
+          )}
         </Button>
+        {isCancel && (
+          <Alert variant='destructive'>
+            <AlertCircleIcon className='size-4' />
+            <AlertTitle>Checkout cancelled</AlertTitle>
+            <AlertDescription>
+              Your checkout was cancelled. Please try again.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,14 +1,16 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { InboxIcon, ShoppingCartIcon, StoreIcon } from 'lucide-react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { ShoppingCartIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useTRPC } from '@/trpc/client';
 import { getTenantUrl } from '@/lib/tenants';
 import { useHydration } from '@/hooks/use-hydration';
 import { useCart } from '@/modules/checkout/hooks/use-cart';
+import { useCheckoutStates } from '@/modules/checkout/hooks/use-checkout-states';
 import {
   CartItem,
   CartItemSkeleton
@@ -24,8 +26,12 @@ type CheckoutViewProps = {
 };
 
 export default function CheckoutView({ slug }: CheckoutViewProps) {
+  const router = useRouter();
   const isHydration = useHydration();
+  const [checkoutState, setCheckoutState] = useCheckoutStates();
+
   const trpc = useTRPC();
+
   const {
     totalItems,
     cartItems,
@@ -44,12 +50,51 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
     })
   );
 
+  const setCheckoutStateToDefault = () => {
+    setCheckoutState({
+      success: false,
+      cancel: false
+    });
+  };
+
+  const { mutate: purchase, isPending: isPurchasePending } = useMutation(
+    trpc.checkout.purchase.mutationOptions({
+      onMutate: () => {
+        setCheckoutStateToDefault();
+      },
+      onSuccess: (data) => {
+        window.location.href = data.url;
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        if (error.data?.code === 'UNAUTHORIZED') {
+          router.push('/sign-in');
+        }
+      }
+    })
+  );
+
   useEffect(() => {
     if (error && error.data?.code === 'NOT_FOUND') {
       toast.warning('Some products not found, cart cleared');
       clearCart();
     }
   }, [error, clearCart]);
+
+  useEffect(() => {
+    if (checkoutState.success) {
+      setCheckoutStateToDefault();
+      clearCart();
+      toast.success('Checkout successful, redirecting to home page');
+      router.push(getTenantUrl(slug));
+    }
+  }, [
+    checkoutState.success,
+    slug,
+    router,
+    clearCart,
+    setCheckoutStateToDefault
+  ]);
 
   const totalPrice = Object.entries(cartItems).reduce(
     (acc, [productId, quantity]) => {
@@ -58,6 +103,13 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
     },
     0
   );
+
+  const handleCheckout = () => {
+    purchase({
+      cartItems,
+      tenantSlug: slug
+    });
+  };
 
   if (!isHydration || isPending) {
     return <CheckoutViewSkeleton />;
@@ -94,9 +146,9 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
         <div className='space-y-6'>
           <CheckoutSidebar
             totalPrice={totalPrice}
-            onCheckout={() => {
-              console.log('checkout');
-            }}
+            onCheckout={handleCheckout}
+            isPending={isPurchasePending}
+            isCancel={checkoutState.cancel}
           />
         </div>
       </div>
