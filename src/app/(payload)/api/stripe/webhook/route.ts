@@ -80,7 +80,7 @@ const createOrdersFromLineItems = async (
         user: userId,
         name: lineItem.price.product.name,
         product: lineItem.price.product.metadata.id,
-        quantity: lineItem.price.product.metadata.quantity
+        quantity: lineItem.quantity!
       }
     });
   });
