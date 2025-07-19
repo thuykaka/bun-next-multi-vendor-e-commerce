@@ -3,13 +3,21 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
+type CartItem = {
+  [productId: string]: number;
+};
+
 type CartState = {
-  tenantCarts: Record<string, { productIds: string[] }>;
-  addProductToCart: (tenantSlug: string, productId: string) => void;
+  tenantCarts: { [tenantSlug: string]: CartItem };
+  updateProductToCart: (
+    tenantSlug: string,
+    productId: string,
+    quantity: number
+  ) => void;
   removeProductFromCart: (tenantSlug: string, productId: string) => void;
   clearCart: (tenantSlug: string) => void;
   clearAllCarts: () => void;
-  getCartByTenantSlug: (tenantSlug: string) => string[];
+  getCartByTenantSlug: (tenantSlug: string) => CartItem;
 };
 
 export const useCartStore = create<CartState>()(
@@ -17,26 +25,33 @@ export const useCartStore = create<CartState>()(
     shared(
       immer((set, get) => ({
         tenantCarts: {},
-        addProductToCart: (tenantSlug: string, productId: string) => {
+        updateProductToCart: (
+          tenantSlug: string,
+          productId: string,
+          quantity: number = 1
+        ) => {
           set((state) => {
-            state.tenantCarts[tenantSlug] ||= { productIds: [] };
-            state.tenantCarts[tenantSlug].productIds.push(productId);
+            state.tenantCarts[tenantSlug] ||= {};
+
+            const currentQuantity =
+              state.tenantCarts[tenantSlug][productId] || 0;
+            const newQuantity = currentQuantity + quantity;
+
+            if (newQuantity <= 0) {
+              delete state.tenantCarts[tenantSlug][productId];
+            } else {
+              state.tenantCarts[tenantSlug][productId] = newQuantity;
+            }
           });
         },
         removeProductFromCart: (tenantSlug: string, productId: string) => {
           set((state) => {
-            if (state.tenantCarts[tenantSlug]) {
-              state.tenantCarts[tenantSlug].productIds = state.tenantCarts[
-                tenantSlug
-              ].productIds.filter((id: string) => id !== productId);
-            }
+            delete state.tenantCarts[tenantSlug][productId];
           });
         },
         clearCart: (tenantSlug: string) => {
           set((state) => {
-            if (state.tenantCarts[tenantSlug]) {
-              state.tenantCarts[tenantSlug].productIds = [];
-            }
+            state.tenantCarts[tenantSlug] = {};
           });
         },
         clearAllCarts: () => {
@@ -45,7 +60,7 @@ export const useCartStore = create<CartState>()(
           });
         },
         getCartByTenantSlug: (tenantSlug: string) => {
-          return get().tenantCarts[tenantSlug]?.productIds || [];
+          return get().tenantCarts[tenantSlug] || {};
         }
       })),
       {

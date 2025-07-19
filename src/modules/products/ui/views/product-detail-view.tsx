@@ -29,7 +29,7 @@ export function ProductDetailView({
   );
 
   return (
-    <div className='border-card bg-card mx-auto w-full max-w-7xl rounded-md border p-6 lg:min-h-[calc(100vh-200px)]'>
+    <div className='border-card bg-card mx-auto w-full max-w-7xl rounded-md border p-6 lg:min-h-[calc(100vh-160px)]'>
       <div className='grid grid-cols-1 gap-8 lg:grid-cols-12'>
         <div className='space-y-4 lg:col-span-7'>
           <AspectRatio

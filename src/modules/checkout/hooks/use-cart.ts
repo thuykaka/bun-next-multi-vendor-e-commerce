@@ -3,31 +3,20 @@ import { useCartStore } from '@/modules/checkout/store/use-cart-store';
 
 export const useCart = (tenantSlug: string) => {
   const {
-    addProductToCart,
+    updateProductToCart,
     removeProductFromCart,
     clearCart,
     clearAllCarts,
     getCartByTenantSlug
   } = useCartStore();
 
-  const productIds = getCartByTenantSlug(tenantSlug);
-
-  const toggleProductInCart = useCallback(
-    (productId: string) => {
-      if (productIds.includes(productId)) {
-        removeProductFromCart(tenantSlug, productId);
-      } else {
-        addProductToCart(tenantSlug, productId);
-      }
-    },
-    [productIds, tenantSlug]
-  );
+  const cartItems = getCartByTenantSlug(tenantSlug);
 
   const isProductInCart = useCallback(
     (productId: string) => {
-      return productIds.includes(productId);
+      return cartItems[productId] > 0;
     },
-    [productIds]
+    [cartItems]
   );
 
   const clearTenantCart = () => {
@@ -35,15 +24,14 @@ export const useCart = (tenantSlug: string) => {
   };
 
   return {
-    productIds,
-    totalItems: productIds.length,
-    addProductToCart: (productId: string) =>
-      addProductToCart(tenantSlug, productId),
+    cartItems,
+    totalItems: Object.keys(cartItems).length,
+    updateProductToCart: (productId: string, quantity: number) =>
+      updateProductToCart(tenantSlug, productId, quantity),
     removeProductFromCart: (productId: string) =>
       removeProductFromCart(tenantSlug, productId),
     clearCart: clearTenantCart,
     isProductInCart,
-    toggleProductInCart,
     clearAllCarts
   };
 };
