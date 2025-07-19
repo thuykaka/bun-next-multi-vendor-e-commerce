@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useTRPC } from '@/trpc/client';
 import { formatPriceCurrency } from '@/lib/format';
 import { getTenantUrl } from '@/lib/tenants';
+import { CartButton } from '@/modules/products/ui/components/cart-button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import { Rating, RatingButton } from '@/components/ui/kibo-ui/rating';
@@ -14,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type ProductDetailViewProps = {
   productId: string;
-  tenantSlug?: string | null;
+  tenantSlug: string;
 };
 
 export function ProductDetailView({
@@ -112,12 +113,7 @@ export function ProductDetailView({
             </Tabs>
 
             <div className='mt-8 flex gap-4'>
-              <Button className='w-full flex-1' variant='default'>
-                Add to Cart
-              </Button>
-              <Button className='w-full flex-1' variant='outline'>
-                Buy Now
-              </Button>
+              <CartButton tenantSlug={tenantSlug} productId={product.id} />
             </div>
           </div>
         </div>
