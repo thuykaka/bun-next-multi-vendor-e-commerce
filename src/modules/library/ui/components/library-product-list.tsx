@@ -4,24 +4,17 @@ import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { InboxIcon, Loader2Icon } from 'lucide-react';
 import { useTRPC } from '@/trpc/client';
 import { DEFAULT_LIMIT } from '@/constants/biz';
-import { useProductFilter } from '@/modules/products/hooks/use-product-filter';
-import { ProductCard } from '@/modules/products/ui/components/product-card';
+import { LibraryProductCard } from '@/modules/library/ui/components/library-product-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
-type ProductListProps = {
-  category?: string | null;
-  tenantSlug?: string | null;
-};
-
-export function ProductList({ category, tenantSlug }: ProductListProps) {
-  const [filters] = useProductFilter();
+export function LibraryProductList() {
   const trpc = useTRPC();
 
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery(
-      trpc.products.getMany.infiniteQueryOptions(
-        { category, tenantSlug, ...filters },
+      trpc.library.getMany.infiniteQueryOptions(
+        {},
         {
           getNextPageParam: (lastPage) =>
             lastPage.docs.length > 0 ? lastPage.nextPage : undefined
@@ -40,24 +33,22 @@ export function ProductList({ category, tenantSlug }: ProductListProps) {
 
   return (
     <div>
-      <h2 className='p-4 pt-0 font-medium'>
+      <h2 className='py-4 pt-0 font-medium'>
         {data?.pages?.[0]?.totalDocs} products found
       </h2>
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
         {data?.pages
           ?.flatMap((page) => page.docs)
           .map((product) => (
-            <ProductCard
+            <LibraryProductCard
               key={product.id}
               id={product.id}
               name={product.name}
               imageUrl={product.images?.[0]?.url}
-              authorSlug={product.tenant.slug}
               authorName={product.tenant.name}
               authorAvatarUrl={product.tenant.logo?.url}
               reviewRating={3}
               reviewCount={5}
-              price={product.price}
             />
           ))}
       </div>
@@ -80,7 +71,7 @@ export function ProductList({ category, tenantSlug }: ProductListProps) {
   );
 }
 
-export function ProductListSkeleton() {
+export function LibraryProductListSkeleton() {
   return (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
       {Array.from({ length: Math.min(DEFAULT_LIMIT, 12) }).map((_, index) => (
@@ -97,6 +88,6 @@ export function ProductListSkeleton() {
   );
 }
 
-export function ProductListError() {
+export function LibraryProductListError() {
   return <div>Error loading products</div>;
 }

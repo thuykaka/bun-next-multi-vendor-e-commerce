@@ -19,24 +19,15 @@ export const checkoutRouter = createTRPCRouter({
     .input(
       z.object({
         cartItems: z
-          .record(
-            z.string(),
-            z
-              .number()
-              .int()
-              .positive()
-              .min(1, 'Quantity must be greater than 0')
-          )
-          .refine((data) => Object.keys(data).length > 0, {
-            message: 'Cart must have at least one item'
-          }),
+          .array(z.string())
+          .min(1, 'Cart must have at least one item'),
         tenantSlug: z.string().min(1, 'Tenant slug is required')
       })
     )
     .mutation(async ({ ctx, input }) => {
       const where: Where = {
         and: [
-          { id: { in: Object.keys(input.cartItems) } },
+          { id: { in: input.cartItems } },
           { 'tenant.slug': { equals: input.tenantSlug } }
         ]
       };
@@ -47,7 +38,7 @@ export const checkoutRouter = createTRPCRouter({
         where
       });
 
-      if (products.totalDocs !== Object.keys(input.cartItems).length) {
+      if (products.totalDocs !== input.cartItems.length) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Some products were not found'
@@ -72,7 +63,7 @@ export const checkoutRouter = createTRPCRouter({
 
       const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
         products.docs.map((product) => ({
-          quantity: input.cartItems[product.id],
+          quantity: 1,
           price_data: {
             unit_amount: product.price * 100, // Stripe uses cents
             currency: 'usd',

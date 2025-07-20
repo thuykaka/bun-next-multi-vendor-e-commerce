@@ -113,7 +113,11 @@ export function ProductDetailView({
             </Tabs>
 
             <div className='mt-8 flex gap-4'>
-              <CartButton tenantSlug={tenantSlug} productId={product.id} />
+              <CartButton
+                tenantSlug={tenantSlug}
+                productId={product.id}
+                isPurchased={product.isPurchased}
+              />
             </div>
           </div>
         </div>

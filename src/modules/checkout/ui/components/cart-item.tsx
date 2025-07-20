@@ -1,4 +1,4 @@
-import { Trash2Icon, MinusIcon, PlusIcon } from 'lucide-react';
+import { MinusIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import Image from 'next/image';
 import { formatPriceCurrency } from '@/lib/format';
 import { Button } from '@/components/ui/button';
@@ -8,20 +8,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 type CartItemProps = {
   name: string;
   price: number;
-  quantity: number;
   imageUrl?: string | null;
   onRemove: () => void;
-  onUpdateQuantity: (quantity: number) => void;
 };
 
-export function CartItem({
-  name,
-  price,
-  quantity,
-  imageUrl,
-  onRemove,
-  onUpdateQuantity
-}: CartItemProps) {
+export function CartItem({ name, price, imageUrl, onRemove }: CartItemProps) {
   return (
     <Card className='overflow-hidden p-0'>
       <CardContent className='p-0'>
@@ -32,7 +23,7 @@ export function CartItem({
               alt={name}
               width={100}
               height={100}
-              className='h-[250px] w-full object-cover md:w-32 lg:h-[150px]'
+              className='h-[200px] w-full object-cover md:w-32 lg:h-[120px]'
             />
           </div>
           <div className='flex-1 p-6 pb-3'>
@@ -46,24 +37,6 @@ export function CartItem({
             </div>
 
             <div className='mt-4 flex items-center justify-between'>
-              <div className='flex items-center gap-1'>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  onClick={() => onUpdateQuantity(-1)}
-                >
-                  <MinusIcon className='size-4' />
-                </Button>
-                <span className='w-8 text-center'>{quantity}</span>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  onClick={() => onUpdateQuantity(1)}
-                >
-                  <PlusIcon className='size-4' />
-                </Button>
-              </div>
-
               <div className='text-right'>
                 <div className='font-medium'>{formatPriceCurrency(price)}</div>
               </div>

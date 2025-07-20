@@ -1,44 +1,29 @@
 import { StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { formatPriceCurrency } from '@/lib/format';
-import { getTenantUrl } from '@/lib/tenants';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
-type ProductCardProps = {
+type LibraryProductCardProps = {
   id: string;
   name: string;
   imageUrl?: string | null;
   authorName: string;
-  authorSlug: string;
   authorAvatarUrl?: string | null;
   reviewRating: number;
   reviewCount: number;
-  price: number;
 };
 
-export function ProductCard({
+export function LibraryProductCard({
   id,
   name,
   imageUrl,
   authorName,
-  authorSlug,
   authorAvatarUrl,
   reviewRating,
-  reviewCount,
-  price
-}: ProductCardProps) {
-  const router = useRouter();
-
-  const handleOpenTenantPage = (e: React.MouseEvent<HTMLParagraphElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    router.push(getTenantUrl(authorSlug));
-  };
-
+  reviewCount
+}: LibraryProductCardProps) {
   return (
-    <Link href={`${getTenantUrl(authorSlug)}/products/${id}`}>
+    <Link href={`/library/${id}`}>
       <div className='bg-card flex flex-col overflow-hidden rounded-md border'>
         <AspectRatio ratio={4 / 3}>
           <Image
@@ -61,9 +46,7 @@ export function ProductCard({
                   height={16}
                   className='size-[16px] shrink-0 rounded-full border'
                 />
-                <p className='text-sm underline' onClick={handleOpenTenantPage}>
-                  {authorName}
-                </p>
+                <p className='text-sm underline'>{authorName}</p>
               </div>
             </div>
             {reviewCount > 0 && (
@@ -77,11 +60,6 @@ export function ProductCard({
                 </p>
               </div>
             )}
-          </div>
-          <div className='mt-4 flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <span className='font-medium'>{formatPriceCurrency(price)}</span>
-            </div>
           </div>
         </div>
       </div>

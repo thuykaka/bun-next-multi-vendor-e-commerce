@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ShoppingCartIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -32,13 +32,8 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
 
   const trpc = useTRPC();
 
-  const {
-    totalItems,
-    cartItems,
-    clearCart,
-    updateProductToCart,
-    removeProductFromCart
-  } = useCart(slug);
+  const { totalItems, cartItems, clearCart, removeProductFromCart } =
+    useCart(slug);
 
   const {
     data: products,
@@ -46,21 +41,20 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
     isPending
   } = useQuery(
     trpc.checkout.getProducts.queryOptions({
-      productIds: Object.keys(cartItems)
+      productIds: cartItems
     })
   );
 
-  const setCheckoutStateToDefault = () => {
+  const resetCheckoutState = () =>
     setCheckoutState({
       success: false,
       cancel: false
     });
-  };
 
   const { mutate: purchase, isPending: isPurchasePending } = useMutation(
     trpc.checkout.purchase.mutationOptions({
       onMutate: () => {
-        setCheckoutStateToDefault();
+        resetCheckoutState();
       },
       onSuccess: (data) => {
         window.location.href = data.url;
@@ -83,25 +77,20 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
 
   useEffect(() => {
     if (checkoutState.success) {
-      setCheckoutStateToDefault();
+      resetCheckoutState();
       clearCart();
       toast.success('Checkout successful, redirecting to home page');
       router.push(getTenantUrl(slug));
     }
-  }, [
-    checkoutState.success,
-    slug,
-    router,
-    clearCart,
-    setCheckoutStateToDefault
-  ]);
+  }, [checkoutState.success, clearCart, router, slug]);
 
-  const totalPrice = Object.entries(cartItems).reduce(
-    (acc, [productId, quantity]) => {
-      const product = products?.docs.find((p) => p.id === productId);
-      return acc + (product?.price || 0) * quantity;
-    },
-    0
+  const totalPrice = useMemo(
+    () =>
+      cartItems.reduce((acc, productId) => {
+        const product = products?.docs.find((p) => p.id === productId);
+        return acc + (product?.price || 0);
+      }, 0),
+    [cartItems, products]
   );
 
   const handleCheckout = () => {
@@ -134,10 +123,6 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
                 name={product.name}
                 price={product.price}
                 imageUrl={product.images?.[0]?.url}
-                quantity={cartItems[product.id]}
-                onUpdateQuantity={(quantity) =>
-                  updateProductToCart(product.id, quantity)
-                }
                 onRemove={() => removeProductFromCart(product.id)}
               />
             ))}
