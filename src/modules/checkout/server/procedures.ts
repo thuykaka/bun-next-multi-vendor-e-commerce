@@ -1,9 +1,116 @@
 import z from 'zod';
 import { Media, Tenant } from '@/payload-types';
 import { TRPCError } from '@trpc/server';
-import { baseProcedure, createTRPCRouter } from '@/trpc/init';
+import { Where } from 'payload';
+import type Stripe from 'stripe';
+import {
+  baseProcedure,
+  protectedProcedure,
+  createTRPCRouter
+} from '@/trpc/init';
+import { stripe } from '@/lib/stripe';
+import {
+  CheckoutSessionMetadata,
+  ProductMetadata
+} from '@/modules/checkout/types';
 
 export const checkoutRouter = createTRPCRouter({
+  purchase: protectedProcedure
+    .input(
+      z.object({
+        cartItems: z
+          .record(
+            z.string(),
+            z
+              .number()
+              .int()
+              .positive()
+              .min(1, 'Quantity must be greater than 0')
+          )
+          .refine((data) => Object.keys(data).length > 0, {
+            message: 'Cart must have at least one item'
+          }),
+        tenantSlug: z.string().min(1, 'Tenant slug is required')
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const where: Where = {
+        and: [
+          { id: { in: Object.keys(input.cartItems) } },
+          { 'tenant.slug': { equals: input.tenantSlug } }
+        ]
+      };
+
+      const products = await ctx.payloadcms.find({
+        collection: 'products',
+        depth: 2,
+        where
+      });
+
+      if (products.totalDocs !== Object.keys(input.cartItems).length) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Some products were not found'
+        });
+      }
+
+      const tenants = await ctx.payloadcms.find({
+        collection: 'tenants',
+        limit: 1,
+        pagination: false,
+        where: { slug: { equals: input.tenantSlug } }
+      });
+
+      const tenant = tenants.docs?.[0];
+
+      if (!tenant) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Tenant not found'
+        });
+      }
+
+      const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+        products.docs.map((product) => ({
+          quantity: input.cartItems[product.id],
+          price_data: {
+            unit_amount: product.price * 100, // Stripe uses cents
+            currency: 'usd',
+            product_data: {
+              name: product.name,
+              metadata: {
+                stripeAccountId: tenant.stripeAccountId,
+                id: product.id,
+                name: product.name,
+                price: product.price
+              } as ProductMetadata
+            }
+          }
+        }));
+
+      const checkoutState = await stripe.checkout.sessions.create({
+        customer_email: ctx.session.user.email,
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/tenants/${input.tenantSlug}/checkout?success=true`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/tenants/${input.tenantSlug}/checkout?cancel=true`,
+        mode: 'payment',
+        line_items: lineItems,
+        invoice_creation: {
+          enabled: true
+        },
+        metadata: {
+          userId: ctx.session.user.id
+        } as CheckoutSessionMetadata
+      });
+
+      if (!checkoutState.url) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create checkout session'
+        });
+      }
+
+      return { url: checkoutState.url };
+    }),
   getProducts: baseProcedure
     .input(z.object({ productIds: z.array(z.string()) }))
     .query(async ({ ctx, input }) => {
