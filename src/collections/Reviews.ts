@@ -1,11 +1,17 @@
 import type { CollectionConfig } from 'payload';
+import { isSuperAdmin } from '@/lib/payloadcms';
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
   admin: {
     useAsTitle: 'description'
   },
-
+  access: {
+    read: ({ req }) => isSuperAdmin(req.user),
+    create: ({ req }) => isSuperAdmin(req.user),
+    update: ({ req }) => isSuperAdmin(req.user),
+    delete: ({ req }) => isSuperAdmin(req.user)
+  },
   fields: [
     {
       name: 'description',

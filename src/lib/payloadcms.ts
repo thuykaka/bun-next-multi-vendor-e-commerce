@@ -1,8 +1,8 @@
-import 'server-only';
+import { User } from '@/payload-types';
 import config from '@payload-config';
 import { headers as getHeaders } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getPayload as _getPayload, BasePayload } from 'payload';
+import { getPayload as _getPayload, BasePayload, ClientUser } from 'payload';
 
 let payloadInstance: BasePayload | null = null;
 
@@ -23,6 +23,10 @@ export const getSession = async () => {
 export const isAuthenticated = async (): Promise<boolean> => {
   const session = await getSession();
   return Boolean(session?.user);
+};
+
+export const isSuperAdmin = (user: User | ClientUser | null) => {
+  return Boolean(user?.roles?.includes('superAdmin'));
 };
 
 export const checkAuth = async (

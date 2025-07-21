@@ -1,7 +1,17 @@
+import { Tenant } from '@/payload-types';
 import type { CollectionConfig } from 'payload';
+import { isSuperAdmin } from '@/lib/payloadcms';
 
 export const Products: CollectionConfig = {
   slug: 'products',
+  access: {
+    create: ({ req }) => {
+      if (isSuperAdmin(req.user)) return true;
+      const tenant = req.user?.tenants?.[0]?.tenant as Tenant | null;
+      return Boolean(tenant?.stripeDetailsSubmitted);
+    }
+    // Other access control is handled by payload.config.ts > multiTenantPlugin
+  },
   admin: {
     useAsTitle: 'name'
   },
@@ -75,6 +85,14 @@ export const Products: CollectionConfig = {
     {
       name: 'shippingPolicy',
       type: 'text'
+    },
+    {
+      name: 'content',
+      type: 'textarea',
+      admin: {
+        description:
+          'Protected content only visible to customers after purchase. Add product documentation, downloadable files, getting started guides, and bonus materials. Supports markdown.'
+      }
     }
   ]
 };

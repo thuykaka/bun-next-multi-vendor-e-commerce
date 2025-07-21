@@ -48,7 +48,13 @@ export function LibraryProductView({ productId }: LibraryProductViewProps) {
             <div className='lg:col-span-2 xl:col-span-2'>
               <ReviewSidebar productId={productId} />
             </div>
-            <div className='lg:col-span-4 xl:col-span-6'>Content</div>
+            <div className='lg:col-span-4 xl:col-span-6'>
+              {product.content ? (
+                <p className='prose prose-lg'>{product.content}</p>
+              ) : (
+                <p className='prose prose-lg'>No content available</p>
+              )}
+            </div>
           </div>
         </section>
       </div>

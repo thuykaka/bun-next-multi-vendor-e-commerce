@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Category, Media, Tenant } from '@/payload-types';
 import { TRPCError } from '@trpc/server';
-import { headers as getHeaders } from 'next/headers';
 import type { Where, Sort } from 'payload';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 import { getCurrentUser } from '@/lib/payloadcms';
@@ -19,6 +18,9 @@ export const productsRouter = createTRPCRouter({
 
       const product = await ctx.payloadcms.findByID({
         collection: 'products',
+        select: {
+          content: false
+        },
         id: input.id
       });
 
@@ -170,6 +172,9 @@ export const productsRouter = createTRPCRouter({
 
       const products = await ctx.payloadcms.find({
         collection: 'products',
+        select: {
+          content: false
+        },
         depth: 2, // Get all fields of related collections e.g, category, images, etc.
         where,
         sort,
