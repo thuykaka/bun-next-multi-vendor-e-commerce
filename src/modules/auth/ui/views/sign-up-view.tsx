@@ -77,7 +77,7 @@ export default function SignUpView({
       },
       onSuccess: async () => {
         toast.success('Account created successfully');
-        await queryClient.invalidateQueries(trpc.auth.session.queryOptions());
+        await queryClient.invalidateQueries(trpc.auth.me.queryOptions());
         router.push('/');
       }
     });
@@ -246,7 +246,7 @@ export default function SignUpView({
             <img
               src='/auth-bg.png'
               alt='Image'
-              className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
+              className='absolute inset-0 h-full w-full object-cover'
             />
           </div>
         </CardContent>

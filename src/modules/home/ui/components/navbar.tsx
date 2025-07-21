@@ -54,7 +54,7 @@ export default function Navbar() {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
 
   const trpc = useTRPC();
-  const { data: session } = useQuery(trpc.auth.session.queryOptions());
+  const { data: currentUser } = useQuery(trpc.auth.me.queryOptions());
 
   return (
     <nav
@@ -91,7 +91,7 @@ export default function Navbar() {
         </div>
 
         <div className='hidden items-center gap-x-4 lg:flex'>
-          {!!session?.user ? (
+          {!!currentUser ? (
             <Button variant='default' asChild>
               <Link href='/admin' prefetch>
                 <LayoutDashboardIcon className='size-4' />

@@ -24,7 +24,7 @@ export default function NavbarSidebar({
   onOpenChange
 }: NavbarSidebarProps) {
   const trpc = useTRPC();
-  const { data: session } = useQuery(trpc.auth.session.queryOptions());
+  const { data: currentUser } = useQuery(trpc.auth.me.queryOptions());
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
@@ -48,7 +48,7 @@ export default function NavbarSidebar({
             </Link>
           ))}
           <div className='border-t'>
-            {!!session?.user ? (
+            {!!currentUser ? (
               <Link
                 href='/admin'
                 className='hover:bg-accent hover:text-accent-foreground flex w-full items-center p-4 text-left text-base font-medium'

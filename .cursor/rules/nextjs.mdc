@@ -40,6 +40,7 @@ TypeScript and Zod Usage
 - Utilize Zod for schema validation and type inference.
 - Avoid enums; use literal types or maps instead.
 - Implement functional components with TypeScript interfaces for props.
+- Avoid using type `any` in TypeScript for safety.
 
 Syntax and Formatting
 

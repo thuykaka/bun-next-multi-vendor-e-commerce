@@ -14,9 +14,7 @@ type SearchInputProps = {
 
 export default function SearchInput({ disabled = false }: SearchInputProps) {
   const trpc = useTRPC();
-  const { data: session, isPending } = useQuery(
-    trpc.auth.session.queryOptions()
-  );
+  const { data, isPending } = useQuery(trpc.auth.me.queryOptions());
 
   return (
     <div className='flex w-full items-center gap-4 pt-20'>
@@ -30,7 +28,7 @@ export default function SearchInput({ disabled = false }: SearchInputProps) {
       </div>
       {isPending ? (
         <Skeleton className='bg-accent/50 h-9 w-20' />
-      ) : !!session?.user ? (
+      ) : !!data ? (
         <Button variant='outline' asChild>
           <Link href='/library'>
             <BookmarkCheckIcon className='mr-2 size-4' />

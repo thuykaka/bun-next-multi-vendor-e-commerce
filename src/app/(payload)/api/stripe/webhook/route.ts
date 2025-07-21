@@ -1,11 +1,11 @@
-import config from '@payload-config';
 import { NextResponse } from 'next/server';
-import { BasePayload, getPayload } from 'payload';
+import { BasePayload } from 'payload';
 import type Stripe from 'stripe';
+import { getPayload } from '@/lib/payloadcms';
 import { stripe } from '@/lib/stripe';
 import { ExpandedLineItem } from '@/modules/checkout/types';
 
-const PERMITTED_EVENTS = ['checkout.session.completed'] as const;
+const PERMITTED_EVENTS: Stripe.Event.Type[] = ['checkout.session.completed'];
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 
 const validateWebhookSignature = async (
@@ -80,7 +80,7 @@ const createOrdersFromLineItems = async (
         user: userId,
         name: lineItem.price.product.name,
         product: lineItem.price.product.metadata.id,
-        quantity: lineItem.quantity!
+        quantity: Number(lineItem.quantity)
       }
     });
   });
@@ -92,7 +92,7 @@ const createOrdersFromLineItems = async (
 
 async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session,
-  payload: any
+  payload: BasePayload
 ): Promise<void> {
   const user = await validateUser(session.metadata?.userId, payload);
 
@@ -110,7 +110,7 @@ async function handleCheckoutSessionCompleted(
 
 async function processWebhookEvent(
   event: Stripe.Event,
-  payload: any
+  payload: BasePayload
 ): Promise<void> {
   switch (event.type) {
     case 'checkout.session.completed':
@@ -128,12 +128,12 @@ export const POST = async (request: Request) => {
     const event = await validateWebhookSignature(request);
     console.log(`Webhook received: ${event.type}`);
 
-    if (!PERMITTED_EVENTS.includes(event.type as any)) {
+    if (!PERMITTED_EVENTS.includes(event.type)) {
       console.log(`Ignoring unpermitted event: ${event.type}`);
       return NextResponse.json({ message: 'Event ignored' }, { status: 200 });
     }
 
-    const payload = await getPayload({ config });
+    const payload = await getPayload();
 
     await processWebhookEvent(event, payload);
 

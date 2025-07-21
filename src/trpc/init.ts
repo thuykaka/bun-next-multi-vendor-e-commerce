@@ -1,15 +1,13 @@
 import { cache } from 'react';
-import config from '@payload-config';
 import { initTRPC, TRPCError } from '@trpc/server';
-import { headers as getHeaders } from 'next/headers';
-import { getPayload } from 'payload';
 import superjson from 'superjson';
+import { getCurrentUser, getPayload } from '@/lib/payloadcms';
 
 export const createTRPCContext = cache(async () => {
   /**
    * @see: https://trpc.io/docs/server/context
    */
-  const payload = await getPayload({ config });
+  const payload = await getPayload();
   return { payloadcms: payload };
 });
 
@@ -27,11 +25,9 @@ const t = initTRPC.context<TRPCContext>().create({
 });
 
 const isAuthenticated = t.middleware(async ({ ctx, next }) => {
-  const headers = await getHeaders();
+  const currentUser = await getCurrentUser();
 
-  const session = await ctx.payloadcms.auth({ headers });
-
-  if (!session || !session.user) {
+  if (!currentUser) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'You must be logged in to access this resource'
@@ -42,8 +38,7 @@ const isAuthenticated = t.middleware(async ({ ctx, next }) => {
     ctx: {
       ...ctx,
       session: {
-        ...session,
-        user: session.user
+        user: currentUser
       }
     }
   });

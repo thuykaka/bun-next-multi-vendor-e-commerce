@@ -1,37 +1,53 @@
-import { useCallback } from 'react';
-import { useCartStore } from '@/modules/checkout/store/use-cart-store';
+import { useCallback, useMemo } from 'react';
+import {
+  useCartActions,
+  useCartStateByTenantSlug
+} from '@/modules/checkout/store/use-cart-store';
 
 export const useCart = (tenantSlug: string) => {
-  const {
-    updateProductToCart,
-    removeProductFromCart,
-    clearCart,
-    clearAllCarts,
-    getCartByTenantSlug
-  } = useCartStore();
+  const cartItems = useCartStateByTenantSlug(tenantSlug);
 
-  const cartItems = getCartByTenantSlug(tenantSlug);
+  const { addProductToCart, removeProductFromCart, clearCart } =
+    useCartActions();
+
+  const totalItems = useMemo(() => cartItems.length, [cartItems]);
+
+  const toggleProductToCart = useCallback(
+    (productId: string) => {
+      console.log('toggleProductToCart', productId, cartItems);
+      if (cartItems.includes(productId)) {
+        removeProductFromCart(tenantSlug, productId);
+      } else {
+        addProductToCart(tenantSlug, productId);
+      }
+    },
+    [cartItems, tenantSlug, removeProductFromCart, , addProductToCart]
+  );
 
   const isProductInCart = useCallback(
     (productId: string) => {
-      return cartItems[productId] > 0;
+      return cartItems.includes(productId);
     },
     [cartItems]
   );
 
-  const clearTenantCart = () => {
+  const clearTenantCart = useCallback(() => {
     clearCart(tenantSlug);
-  };
+  }, [clearCart, tenantSlug]);
+
+  const removeProductFromCartCallback = useCallback(
+    (productId: string) => {
+      removeProductFromCart(tenantSlug, productId);
+    },
+    [removeProductFromCart, tenantSlug]
+  );
 
   return {
     cartItems,
-    totalItems: Object.keys(cartItems).length,
-    updateProductToCart: (productId: string, quantity: number) =>
-      updateProductToCart(tenantSlug, productId, quantity),
-    removeProductFromCart: (productId: string) =>
-      removeProductFromCart(tenantSlug, productId),
+    totalItems,
+    toggleProductToCart,
+    removeProductFromCart: removeProductFromCartCallback,
     clearCart: clearTenantCart,
-    isProductInCart,
-    clearAllCarts
+    isProductInCart
   };
 };

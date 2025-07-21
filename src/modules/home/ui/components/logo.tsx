@@ -12,15 +12,17 @@ export default function Logo({
   className,
   logo,
   name = 'funroad',
-  link = '/'
+  link = '/',
+  icon
 }: {
   name?: string;
   link?: string;
   logo?: string | null;
+  icon?: React.ReactNode;
   className?: string;
 }) {
   return (
-    <Link href={link} className='flex items-center gap-x-2'>
+    <Link prefetch href={link} className='flex items-center gap-x-2'>
       {logo && (
         <Image
           className='shrink-0 rounded-full border'
@@ -30,6 +32,7 @@ export default function Logo({
           height={36}
         />
       )}
+      {icon && icon}
       <span
         className={cn(
           'text-4xl font-semibold lg:text-5xl',
