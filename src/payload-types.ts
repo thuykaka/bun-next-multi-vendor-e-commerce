@@ -245,6 +245,10 @@ export interface Product {
   images?: (string | Media)[] | null;
   refundPolicy?: ('1-day' | '3-days' | '7-days' | '14-days' | '30-days' | 'no-refund') | null;
   shippingPolicy?: string | null;
+  /**
+   * Protected content only visible to customers after purchase. Add product documentation, downloadable files, getting started guides, and bonus materials. Supports markdown.
+   */
+  content?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -268,6 +272,9 @@ export interface Order {
   name: string;
   user: string | User;
   product: string | Product;
+  /**
+   * Stripe checkout session associated with the order
+   */
   stripeCheckoutSessionId: string;
   quantity: number;
   updatedAt: string;
@@ -442,6 +449,7 @@ export interface ProductsSelect<T extends boolean = true> {
   images?: T;
   refundPolicy?: T;
   shippingPolicy?: T;
+  content?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,9 +1,14 @@
 import type { CollectionConfig } from 'payload';
+import { isSuperAdmin } from '@/lib/payloadcms';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
   admin: {
     useAsTitle: 'slug'
+  },
+  access: {
+    create: ({ req }) => isSuperAdmin(req.user),
+    delete: ({ req }) => isSuperAdmin(req.user)
   },
   fields: [
     {
@@ -22,6 +27,9 @@ export const Tenants: CollectionConfig = {
       label: 'Store Slug',
       admin: {
         description: `The subdomain of the store (e.g. "john-doe.funroad.com")`
+      },
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user)
       }
     },
     {
@@ -38,16 +46,22 @@ export const Tenants: CollectionConfig = {
       name: 'stripeAccountId',
       type: 'text',
       label: 'Stripe Account ID',
+      required: true,
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user)
+      },
       admin: {
         readOnly: true,
         description: `The Stripe account ID of the store`
-      },
-      required: true
+      }
     },
     {
       name: 'stripeDetailsSubmitted',
       type: 'checkbox',
       label: 'Stripe Details Submitted',
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user)
+      },
       admin: {
         readOnly: true,
         description: `You cannot create products until the Stripe details are submitted`

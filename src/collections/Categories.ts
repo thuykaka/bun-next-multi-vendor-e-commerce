@@ -1,13 +1,18 @@
 import type { CollectionConfig } from 'payload';
+import { isSuperAdmin } from '@/lib/payloadcms';
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
   admin: {
     useAsTitle: 'name',
-    preview: ({ slug }) => `http://localhost:3000/${slug}`
+    preview: ({ slug }) => `http://localhost:3000/${slug}`,
+    hidden: ({ user }) => !isSuperAdmin(user)
   },
   access: {
-    read: () => true
+    read: () => true,
+    create: ({ req }) => isSuperAdmin(req.user),
+    update: ({ req }) => isSuperAdmin(req.user),
+    delete: ({ req }) => isSuperAdmin(req.user)
   },
   fields: [
     {

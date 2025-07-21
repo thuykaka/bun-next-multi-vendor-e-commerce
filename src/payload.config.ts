@@ -15,6 +15,7 @@ import { Reviews } from './collections/Reviews';
 import { Tags } from './collections/Tags';
 import { Tenants } from './collections/Tenants';
 import { Users } from './collections/Users';
+import { isSuperAdmin } from './lib/payloadcms';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -56,7 +57,7 @@ export default buildConfig({
         includeDefaultField: false
       },
       userHasAccessToAllTenants(user) {
-        return !!user?.roles?.includes('super-admin');
+        return isSuperAdmin(user);
       }
     })
     // storage-adapter-placeholder
