@@ -5,7 +5,10 @@ import { getPayload } from '@/lib/payloadcms';
 import { stripe } from '@/lib/stripe';
 import { ExpandedLineItem } from '@/modules/checkout/types';
 
-const PERMITTED_EVENTS: Stripe.Event.Type[] = ['checkout.session.completed'];
+const PERMITTED_EVENTS: Stripe.Event.Type[] = [
+  'checkout.session.completed',
+  'account.updated'
+];
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 
 const validateWebhookSignature = async (
@@ -50,11 +53,18 @@ const validateUser = async (
 };
 
 const getExpandedCheckoutSession = async (
-  sessionId: string
+  sessionId: string,
+  event: Stripe.Event
 ): Promise<Stripe.Checkout.Session> => {
-  const expandedSession = await stripe.checkout.sessions.retrieve(sessionId, {
-    expand: ['line_items.data.price.product']
-  });
+  const expandedSession = await stripe.checkout.sessions.retrieve(
+    sessionId,
+    {
+      expand: ['line_items.data.price.product']
+    },
+    {
+      stripeAccount: event.account
+    }
+  );
 
   if (
     !expandedSession.line_items?.data ||
@@ -70,7 +80,8 @@ const createOrdersFromLineItems = async (
   lineItems: ExpandedLineItem[],
   sessionId: string,
   userId: string,
-  payload: BasePayload
+  payload: BasePayload,
+  event: Stripe.Event
 ): Promise<void> => {
   const orderPromises = lineItems.map(async (lineItem) => {
     return payload.create({
@@ -80,7 +91,8 @@ const createOrdersFromLineItems = async (
         user: userId,
         name: lineItem.price.product.name,
         product: lineItem.price.product.metadata.id,
-        quantity: Number(lineItem.quantity)
+        quantity: Number(lineItem.quantity),
+        stripeAccountId: event.account
       }
     });
   });
@@ -92,20 +104,44 @@ const createOrdersFromLineItems = async (
 
 async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session,
-  payload: BasePayload
+  payload: BasePayload,
+  event: Stripe.Event
 ): Promise<void> {
   const user = await validateUser(session.metadata?.userId, payload);
 
   let expandedSession;
   try {
-    expandedSession = await getExpandedCheckoutSession(session.id);
+    expandedSession = await getExpandedCheckoutSession(session.id, event);
   } catch (error) {
     console.error(`handleCheckoutSessionCompleted -> error: ${error}`);
     throw new Error('Failed to get expanded checkout session');
   }
 
   const lineItems = expandedSession.line_items!.data as ExpandedLineItem[];
-  await createOrdersFromLineItems(lineItems, session.id, user.id, payload);
+  await createOrdersFromLineItems(
+    lineItems,
+    session.id,
+    user.id,
+    payload,
+    event
+  );
+}
+
+async function handleAccountUpdated(
+  account: Stripe.Account,
+  payload: BasePayload
+): Promise<void> {
+  await payload.update({
+    collection: 'tenants',
+    where: {
+      stripeAccountId: {
+        equals: account.id
+      }
+    },
+    data: {
+      stripeDetailsSubmitted: account.details_submitted
+    }
+  });
 }
 
 async function processWebhookEvent(
@@ -115,7 +151,12 @@ async function processWebhookEvent(
   switch (event.type) {
     case 'checkout.session.completed':
       const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutSessionCompleted(session, payload);
+      await handleCheckoutSessionCompleted(session, payload, event);
+      break;
+
+    case 'account.updated':
+      const account = event.data.object as Stripe.Account;
+      await handleAccountUpdated(account, payload);
       break;
 
     default:

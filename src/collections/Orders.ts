@@ -41,6 +41,13 @@ export const Orders: CollectionConfig = {
       name: 'quantity',
       type: 'number',
       required: true
+    },
+    {
+      name: 'stripeAccountId',
+      type: 'text',
+      admin: {
+        description: 'Stripe account associated with the order'
+      }
     }
   ]
 };

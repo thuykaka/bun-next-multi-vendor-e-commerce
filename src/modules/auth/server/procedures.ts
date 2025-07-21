@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 import { setCookie } from '@/lib/cookies';
 import { getCurrentUser } from '@/lib/payloadcms';
+import { stripe } from '@/lib/stripe';
 
 export const authRouter = createTRPCRouter({
   me: baseProcedure.query(async () => {
@@ -52,12 +53,21 @@ export const authRouter = createTRPCRouter({
         });
       }
 
+      const stripeAccount = await stripe.accounts.create({});
+
+      if (!stripeAccount) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create Stripe account'
+        });
+      }
+
       const tenant = await ctx.payloadcms.create({
         collection: 'tenants',
         data: {
           name: input.username,
           slug: input.username,
-          stripeAccountId: 'test_account_id'
+          stripeAccountId: stripeAccount.id
         }
       });
 

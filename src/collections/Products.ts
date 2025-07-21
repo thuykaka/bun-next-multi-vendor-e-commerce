@@ -13,7 +13,8 @@ export const Products: CollectionConfig = {
     // Other access control is handled by payload.config.ts > multiTenantPlugin
   },
   admin: {
-    useAsTitle: 'name'
+    useAsTitle: 'name',
+    description: 'You must verify your Stripe account before creating products.'
   },
   fields: [
     {

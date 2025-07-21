@@ -26,7 +26,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
 };
 
 export const isSuperAdmin = (user: User | ClientUser | null) => {
-  return Boolean(user?.roles?.includes('superAdmin'));
+  return Boolean(user?.roles?.includes('super-admin'));
 };
 
 export const checkAuth = async (
