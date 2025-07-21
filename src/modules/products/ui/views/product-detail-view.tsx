@@ -4,6 +4,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { HeartIcon, Share2Icon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { useTRPC } from '@/trpc/client';
 import { formatPriceCurrency } from '@/lib/format';
 import { getTenantUrl } from '@/lib/tenants';
@@ -27,6 +28,11 @@ export function ProductDetailView({
   const { data: product } = useSuspenseQuery(
     trpc.products.getOne.queryOptions({ id: productId })
   );
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('Link copied to clipboard');
+  };
 
   return (
     <div className='border-card bg-card mx-auto w-full max-w-7xl rounded-md border p-6 lg:min-h-[calc(100vh-160px)]'>
@@ -64,7 +70,7 @@ export function ProductDetailView({
                 </span>
               </Link>
               <div className='flex gap-2'>
-                <Button variant='ghost' size='icon'>
+                <Button variant='ghost' size='icon' onClick={handleShare}>
                   <Share2Icon className='size-4' />
                 </Button>
                 <Button variant='ghost' size='icon'>
@@ -74,15 +80,25 @@ export function ProductDetailView({
             </div>
             <h1 className='mb-4 text-4xl font-bold'>{product.name}</h1>
 
-            <div className='mb-6 flex items-center gap-2'>
-              <Rating defaultValue={3}>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <RatingButton key={index} size={16} />
-                ))}
-              </Rating>
-              <span className='text-sm font-medium'>4.9</span>
-              <span className='text-muted-foreground text-sm'>(128)</span>
-            </div>
+            {product.reviewCount > 0 && (
+              <div className='mb-6 flex items-center gap-2'>
+                <Rating defaultValue={product.averageRating} readOnly>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <RatingButton
+                      key={index}
+                      size={18}
+                      className='text-yellow-500'
+                    />
+                  ))}
+                </Rating>
+                <span className='pt-0.5 text-sm font-medium'>
+                  {product.averageRating}
+                </span>
+                <span className='text-muted-foreground pt-0.5 text-sm'>
+                  ({product.reviewCount} reviews)
+                </span>
+              </div>
+            )}
 
             <div className='mb-8'>
               <div className='mb-2 text-3xl font-bold'>

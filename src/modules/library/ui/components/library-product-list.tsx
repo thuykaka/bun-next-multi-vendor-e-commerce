@@ -47,8 +47,8 @@ export function LibraryProductList() {
               imageUrl={product.images?.[0]?.url}
               authorName={product.tenant.name}
               authorAvatarUrl={product.tenant.logo?.url}
-              reviewRating={3}
-              reviewCount={5}
+              reviewRating={product.averageRating}
+              reviewCount={product.reviewCount}
             />
           ))}
       </div>
@@ -73,17 +73,20 @@ export function LibraryProductList() {
 
 export function LibraryProductListSkeleton() {
   return (
-    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
-      {Array.from({ length: Math.min(DEFAULT_LIMIT, 12) }).map((_, index) => (
-        <div
-          key={index}
-          className='bg-card flex flex-col gap-2 rounded-md border p-4'
-        >
-          <Skeleton className='h-4 w-full' />
-          <Skeleton className='h-4 w-full' />
-          <Skeleton className='h-4 w-full' />
-        </div>
-      ))}
+    <div>
+      <Skeleton className='mb-4 h-4 w-32 py-4 pt-0' />
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
+        {Array.from({ length: Math.min(DEFAULT_LIMIT, 12) }).map((_, index) => (
+          <div
+            key={index}
+            className='bg-card flex flex-col gap-2 rounded-md border p-4'
+          >
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-full' />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -55,8 +55,8 @@ export function ProductList({ category, tenantSlug }: ProductListProps) {
               authorSlug={product.tenant.slug}
               authorName={product.tenant.name}
               authorAvatarUrl={product.tenant.logo?.url}
-              reviewRating={3}
-              reviewCount={5}
+              reviewRating={product.averageRating}
+              reviewCount={product.reviewCount}
               price={product.price}
             />
           ))}
