@@ -12,7 +12,7 @@ export function StripeVerifyView() {
   const trpc = useTRPC();
 
   const { mutate: verifyStripeAccount } = useMutation(
-    trpc.checkout.veryfy.mutationOptions({
+    trpc.checkout.verify.mutationOptions({
       onSuccess: (data) => {
         router.push(data.url);
       },
@@ -25,7 +25,7 @@ export function StripeVerifyView() {
 
   useEffect(() => {
     verifyStripeAccount();
-  }, [verifyStripeAccount]);
+  }, []);
 
   return (
     <div className='flex min-h-screen flex-col items-center justify-center gap-4'>

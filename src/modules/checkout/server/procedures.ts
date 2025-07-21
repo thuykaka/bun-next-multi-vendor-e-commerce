@@ -16,7 +16,7 @@ import {
 } from '@/modules/checkout/types';
 
 export const checkoutRouter = createTRPCRouter({
-  veryfy: protectedProcedure.mutation(async ({ ctx }) => {
+  verify: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await ctx.payloadcms.findByID({
       collection: 'users',
       id: ctx.session.user.id,
