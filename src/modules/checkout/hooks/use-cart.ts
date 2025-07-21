@@ -21,7 +21,7 @@ export const useCart = (tenantSlug: string) => {
         addProductToCart(tenantSlug, productId);
       }
     },
-    [cartItems, tenantSlug, removeProductFromCart, , addProductToCart]
+    [cartItems, tenantSlug, removeProductFromCart, addProductToCart]
   );
 
   const isProductInCart = useCallback(
