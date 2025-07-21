@@ -68,33 +68,31 @@ export function ProductFilter() {
   });
 
   return (
-    <div>
-      <div className='bg-sidebar rounded-md border'>
-        <div className='flex items-center justify-between border-b p-4'>
-          <h2 className='font-medium'>Filters</h2>
-          {hasAnyFilter && (
-            <Button size='sm' onClick={onClearFilters} variant='outline'>
-              <FilterXIcon className='h-4 w-4' />
-              Clear
-            </Button>
-          )}
-        </div>
-        <FilterSection title='Price'>
-          <PriceFilter
-            minPrice={filters.minPrice}
-            maxPrice={filters.maxPrice}
-            onMinPriceChange={(value) => onChange('minPrice', value)}
-            onMaxPriceChange={(value) => onChange('maxPrice', value)}
-          />
-        </FilterSection>
-
-        <FilterSection title='Tags' className='border-b-0'>
-          <TagsFilter
-            values={filters.tags}
-            onChange={(value) => onChange('tags', value)}
-          />
-        </FilterSection>
+    <div className='bg-sidebar rounded-md border'>
+      <div className='flex items-center justify-between border-b p-4'>
+        <h2 className='font-medium'>Filters</h2>
+        {hasAnyFilter && (
+          <Button size='sm' onClick={onClearFilters} variant='outline'>
+            <FilterXIcon className='h-4 w-4' />
+            Clear
+          </Button>
+        )}
       </div>
+      <FilterSection title='Price'>
+        <PriceFilter
+          minPrice={filters.minPrice}
+          maxPrice={filters.maxPrice}
+          onMinPriceChange={(value) => onChange('minPrice', value)}
+          onMaxPriceChange={(value) => onChange('maxPrice', value)}
+        />
+      </FilterSection>
+
+      <FilterSection title='Tags' className='border-b-0'>
+        <TagsFilter
+          values={filters.tags}
+          onChange={(value) => onChange('tags', value)}
+        />
+      </FilterSection>
     </div>
   );
 }

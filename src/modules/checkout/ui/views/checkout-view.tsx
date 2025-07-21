@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ShoppingCartIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -31,6 +31,7 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
   const [checkoutState, setCheckoutState] = useCheckoutStates();
 
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
   const { totalItems, cartItems, clearCart, removeProductFromCart } =
     useCart(slug);
@@ -80,10 +81,22 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
     if (checkoutState.success) {
       resetCheckoutState();
       clearCart();
+
+      queryClient.invalidateQueries(
+        trpc.library.getMany.infiniteQueryOptions({})
+      );
+
       toast.success('Checkout successful, redirecting to home page');
-      router.push(getTenantUrl(slug));
+      router.push('/library');
     }
-  }, [checkoutState.success, clearCart, router, slug]);
+  }, [
+    checkoutState.success,
+    clearCart,
+    resetCheckoutState,
+    router,
+    queryClient,
+    trpc.library.getMany.infiniteQueryOptions
+  ]);
 
   const totalPrice = useMemo(
     () =>

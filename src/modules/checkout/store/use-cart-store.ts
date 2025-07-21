@@ -26,6 +26,7 @@ const useCartStore = create<CartState>()(
         },
         removeProductFromCart: (tenantSlug: string, productId: string) => {
           set((state) => {
+            if (!state.tenantCarts[tenantSlug]) return;
             state.tenantCarts[tenantSlug] = state.tenantCarts[
               tenantSlug
             ].filter((id) => id !== productId);
