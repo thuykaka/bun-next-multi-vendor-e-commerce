@@ -56,7 +56,7 @@ export default function SignInView({
       },
       onSuccess: async () => {
         toast.success('Signed in successfully');
-        await queryClient.invalidateQueries(trpc.auth.session.queryOptions());
+        await queryClient.invalidateQueries(trpc.auth.me.queryOptions());
         router.push('/');
       }
     });

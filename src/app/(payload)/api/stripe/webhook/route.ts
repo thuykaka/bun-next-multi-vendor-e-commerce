@@ -1,7 +1,7 @@
-import config from '@payload-config';
 import { NextResponse } from 'next/server';
-import { BasePayload, getPayload } from 'payload';
+import { BasePayload } from 'payload';
 import type Stripe from 'stripe';
+import { getPayload } from '@/lib/payloadcms';
 import { stripe } from '@/lib/stripe';
 import { ExpandedLineItem } from '@/modules/checkout/types';
 
@@ -133,7 +133,7 @@ export const POST = async (request: Request) => {
       return NextResponse.json({ message: 'Event ignored' }, { status: 200 });
     }
 
-    const payload = await getPayload({ config });
+    const payload = await getPayload();
 
     await processWebhookEvent(event, payload);
 

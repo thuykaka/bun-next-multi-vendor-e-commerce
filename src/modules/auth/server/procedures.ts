@@ -1,15 +1,13 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { headers as getHeaders } from 'next/headers';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 import { setCookie } from '@/lib/cookies';
+import { getCurrentUser } from '@/lib/payloadcms';
 
 export const authRouter = createTRPCRouter({
-  session: baseProcedure.query(async ({ ctx }) => {
-    const headers = await getHeaders();
-    const session = await ctx.payloadcms.auth({ headers });
-
-    return session;
+  me: baseProcedure.query(async () => {
+    const currentUser = await getCurrentUser();
+    return currentUser;
   }),
   register: baseProcedure
     .input(

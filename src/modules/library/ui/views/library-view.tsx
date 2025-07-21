@@ -1,10 +1,6 @@
-'use client';
-
 import { Suspense } from 'react';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { ArrowLeftIcon } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useTRPC } from '@/trpc/client';
 import Footer from '@/modules/home/ui/components/footer';
 import Logo from '@/modules/home/ui/components/logo';
 import {

@@ -45,11 +45,12 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
     })
   );
 
-  const resetCheckoutState = () =>
+  const resetCheckoutState = () => {
     setCheckoutState({
       success: false,
       cancel: false
     });
+  };
 
   const { mutate: purchase, isPending: isPurchasePending } = useMutation(
     trpc.checkout.purchase.mutationOptions({

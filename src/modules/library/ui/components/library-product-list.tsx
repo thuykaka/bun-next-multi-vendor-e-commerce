@@ -89,5 +89,5 @@ export function LibraryProductListSkeleton() {
 }
 
 export function LibraryProductListError() {
-  return <div>Error loading products</div>;
+  return <div>Error loading products in library</div>;
 }

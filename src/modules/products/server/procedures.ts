@@ -4,6 +4,7 @@ import { TRPCError } from '@trpc/server';
 import { headers as getHeaders } from 'next/headers';
 import type { Where, Sort } from 'payload';
 import { baseProcedure, createTRPCRouter } from '@/trpc/init';
+import { getCurrentUser } from '@/lib/payloadcms';
 import { DEFAULT_LIMIT } from '@/constants/biz';
 
 export const productsRouter = createTRPCRouter({
@@ -14,8 +15,7 @@ export const productsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const headers = await getHeaders();
-      const session = await ctx.payloadcms.auth({ headers });
+      const currentUser = await getCurrentUser();
 
       const product = await ctx.payloadcms.findByID({
         collection: 'products',
@@ -31,7 +31,7 @@ export const productsRouter = createTRPCRouter({
 
       let isPurchased = false;
 
-      if (session && session.user) {
+      if (currentUser) {
         const order = await ctx.payloadcms.find({
           collection: 'orders',
           pagination: false,
@@ -45,7 +45,7 @@ export const productsRouter = createTRPCRouter({
               },
               {
                 user: {
-                  equals: session.user.id
+                  equals: currentUser.id
                 }
               }
             ]

@@ -77,7 +77,7 @@ export default function SignUpView({
       },
       onSuccess: async () => {
         toast.success('Account created successfully');
-        await queryClient.invalidateQueries(trpc.auth.session.queryOptions());
+        await queryClient.invalidateQueries(trpc.auth.me.queryOptions());
         router.push('/');
       }
     });
