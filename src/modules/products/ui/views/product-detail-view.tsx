@@ -1,6 +1,11 @@
 'use client';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  defaultJSXConverters,
+  RichText
+} from '@payloadcms/richtext-lexical/react';
+import type { SerializedEditorState } from 'lexical';
 import { HeartIcon, Share2Icon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -116,7 +121,10 @@ export function ProductDetailView({
                 <TabsTrigger value='refund'>Refund Policy</TabsTrigger>
               </TabsList>
               <TabsContent value='description' className='mt-4'>
-                {product.description}
+                <RichText
+                  data={product.description as SerializedEditorState}
+                  converters={defaultJSXConverters}
+                />
               </TabsContent>
               <TabsContent value='refund' className='mt-4'>
                 {product.refundPolicy === 'no-refund'

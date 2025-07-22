@@ -1,4 +1,5 @@
 import { Tenant } from '@/payload-types';
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import type { CollectionConfig } from 'payload';
 import { isSuperAdmin } from '@/lib/payloadcms';
 
@@ -24,7 +25,7 @@ export const Products: CollectionConfig = {
     },
     {
       name: 'description',
-      type: 'textarea'
+      type: 'richText'
     },
     {
       name: 'price',
@@ -89,10 +90,30 @@ export const Products: CollectionConfig = {
     },
     {
       name: 'content',
-      type: 'textarea',
+      type: 'richText',
+      editor: lexicalEditor(),
       admin: {
         description:
           'Protected content only visible to customers after purchase. Add product documentation, downloadable files, getting started guides, and bonus materials. Supports markdown.'
+      }
+    },
+    {
+      name: 'isPrivate',
+      label: 'Private',
+      defaultValue: false,
+      type: 'checkbox',
+      admin: {
+        description:
+          'If checked, the product will not be shown on the public storefront.'
+      }
+    },
+    {
+      name: 'isArchive',
+      label: 'Archive',
+      defaultValue: false,
+      type: 'checkbox',
+      admin: {
+        description: 'If checked, the product will not be visible to customers.'
       }
     }
   ]

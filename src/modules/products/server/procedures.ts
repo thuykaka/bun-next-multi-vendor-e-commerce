@@ -31,6 +31,13 @@ export const productsRouter = createTRPCRouter({
         });
       }
 
+      if (product.isArchive) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Product is archived'
+        });
+      }
+
       let isPurchased = false;
 
       if (currentUser) {
@@ -102,7 +109,12 @@ export const productsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const where: Where = {};
+      const where: Where = {
+        isArchive: {
+          not_equals: true
+        }
+      };
+
       let sort: Sort = '-name';
 
       if (input.sort === 'trending') {
@@ -134,6 +146,11 @@ export const productsRouter = createTRPCRouter({
       if (input.tenantSlug) {
         where['tenant.slug'] = {
           equals: input.tenantSlug
+        };
+      } else {
+        // If we are not on a tenant page, we only want to show public products (isPrivate is false)
+        where['isPrivate'] = {
+          not_equals: true
         };
       }
 

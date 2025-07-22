@@ -12,7 +12,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   prefetch(trpcServer.tenants.getOne.queryOptions({ slug }));
 
   return (
-    <HydrateClient>
+    <HydrateClient suspenseFallback={<div>Loading...</div>}>
       <ProductDetailView productId={productId} tenantSlug={slug} />
     </HydrateClient>
   );
