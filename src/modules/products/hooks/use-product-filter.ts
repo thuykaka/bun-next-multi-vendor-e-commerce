@@ -7,6 +7,9 @@ import {
 
 export const useProductFilter = () => {
   return useQueryStates({
+    search: parseAsString.withDefault('').withOptions({
+      clearOnDefault: true
+    }),
     minPrice: parseAsString.withDefault('').withOptions({
       clearOnDefault: true
     }),

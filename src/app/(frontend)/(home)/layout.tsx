@@ -13,7 +13,10 @@ export default async function HomeLayout({
   return (
     <main className='flex min-h-screen w-full flex-col overflow-y-auto'>
       <Navbar />
-      <HydrateClient>
+      <HydrateClient
+        suspenseFallback={<div>Loading...</div>}
+        errorFallback={<div>Error</div>}
+      >
         <SearchFilters />
       </HydrateClient>
       <div className='flex min-h-0 flex-1 flex-col gap-4 p-4 lg:px-10'>

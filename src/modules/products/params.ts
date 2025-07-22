@@ -7,6 +7,9 @@ import {
 } from 'nuqs/server';
 
 export const filterProductsSearchParams = {
+  search: parseAsString.withDefault('').withOptions({
+    clearOnDefault: true
+  }),
   minPrice: parseAsString.withDefault('').withOptions({
     clearOnDefault: true
   }),
