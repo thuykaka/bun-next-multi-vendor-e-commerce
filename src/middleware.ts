@@ -6,7 +6,10 @@ export default async function middleware(req: NextRequest) {
 
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN!;
 
-  if (hostname.endsWith(`.${rootDomain}`)) {
+  if (
+    hostname.endsWith(`.${rootDomain}`) &&
+    process.env.NEXT_PUBLIC_USING_REG_DOMAIN === 'true'
+  ) {
     const tenantSlug = hostname.replace(`.${rootDomain}`, '');
     // Rewrite the URL to the tenant's URL, e.g. thuy.example.com/products/123 -> /tenants/thuy/products/123
     return NextResponse.rewrite(
