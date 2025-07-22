@@ -4,6 +4,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud';
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { uploadthingStorage } from '@payloadcms/storage-uploadthing';
 import { buildConfig, Config } from 'payload';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
@@ -63,7 +64,17 @@ export default buildConfig({
       userHasAccessToAllTenants(user) {
         return isSuperAdmin(user);
       }
+    }),
+    // storage-adapter-placeholder,
+    uploadthingStorage({
+      collections: {
+        media: true
+      },
+      clientUploads: true,
+      options: {
+        token: process.env.UPLOADTHING_TOKEN,
+        acl: 'public-read'
+      }
     })
-    // storage-adapter-placeholder
   ]
 });
