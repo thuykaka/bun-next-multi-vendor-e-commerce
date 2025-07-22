@@ -4,7 +4,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud';
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
-import { uploadthingStorage } from '@payloadcms/storage-uploadthing';
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
 import { buildConfig, Config } from 'payload';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
@@ -66,15 +66,13 @@ export default buildConfig({
       }
     }),
     // storage-adapter-placeholder,
-    uploadthingStorage({
+    vercelBlobStorage({
+      enabled: true,
       collections: {
         media: true
       },
       clientUploads: true,
-      options: {
-        token: process.env.UPLOADTHING_TOKEN,
-        acl: 'public-read'
-      }
+      token: process.env.BLOB_READ_WRITE_TOKEN
     })
   ]
 });
