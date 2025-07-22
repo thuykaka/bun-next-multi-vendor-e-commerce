@@ -1,6 +1,8 @@
 'use client';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { RichText } from '@payloadcms/richtext-lexical/react';
+import type { SerializedEditorState } from 'lexical';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useTRPC } from '@/trpc/client';
 import Footer from '@/modules/home/ui/components/footer';
@@ -50,7 +52,7 @@ export function LibraryProductView({ productId }: LibraryProductViewProps) {
             </div>
             <div className='lg:col-span-4 xl:col-span-6'>
               {product.content ? (
-                <p className='prose prose-lg'>{product.content}</p>
+                <RichText data={product.content as SerializedEditorState} />
               ) : (
                 <p className='prose prose-lg'>No content available</p>
               )}

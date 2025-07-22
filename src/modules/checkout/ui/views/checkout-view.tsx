@@ -134,6 +134,8 @@ export default function CheckoutView({ slug }: CheckoutViewProps) {
             {products?.docs.map((product) => (
               <CartItem
                 key={product.id}
+                id={product.id}
+                tenantSlug={slug}
                 name={product.name}
                 price={product.price}
                 imageUrl={product.images?.[0]?.url}

@@ -73,7 +73,8 @@ export const checkoutRouter = createTRPCRouter({
       const where: Where = {
         and: [
           { id: { in: input.cartItems } },
-          { 'tenant.slug': { equals: input.tenantSlug } }
+          { 'tenant.slug': { equals: input.tenantSlug } },
+          { isArchive: { not_equals: true } }
         ]
       };
 
@@ -176,7 +177,10 @@ export const checkoutRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const products = await ctx.payloadcms.find({
         collection: 'products',
-        where: { id: { in: input.productIds } }
+        where: {
+          id: { in: input.productIds },
+          isArchive: { not_equals: true }
+        }
       });
 
       if (products.totalDocs !== input.productIds.length) {

@@ -1,6 +1,8 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useTRPC } from '@/trpc/client';
 import { ReviewForm } from '@/modules/library/ui/components/review-form';
 
@@ -20,7 +22,11 @@ export default function ReviewSidebar({ productId }: ReviewSidebarProps) {
         <h2 className='font-medium'>Review</h2>
       </div>
       <div className='flex flex-col gap-2 border-b p-4'>
-        <ReviewForm productId={productId} initialData={review} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ErrorBoundary fallback={<div>Error</div>}>
+            <ReviewForm productId={productId} initialData={review} />
+          </ErrorBoundary>
+        </Suspense>
       </div>
     </div>
   );
