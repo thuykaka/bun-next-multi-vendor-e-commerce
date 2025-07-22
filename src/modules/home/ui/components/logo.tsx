@@ -12,7 +12,7 @@ export default function Logo({
   className,
   logo,
   name = 'funroad',
-  link = '/',
+  link = process.env.NEXT_PUBLIC_APP_URL || '/',
   icon
 }: {
   name?: string;
